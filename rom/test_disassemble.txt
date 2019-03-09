@@ -1,0 +1,12 @@
+00 				NOP
+c3 01 02 JP 	0201
+00				NOP	
+ff 				RST	
+c3 72 28		JP 2872
+00				NOP
+06 ff 			LD B ff
+0e 00 			LD C 00
+16 01 			LD D 01
+1e 02 			LD E 02
+7f				LD A A
+7e				LD A (HL)
