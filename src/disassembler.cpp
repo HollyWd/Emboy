@@ -36,9 +36,9 @@ void print_char_vect(std::vector<char>& vect){
 	}
 }
 
-char char_to_byte(char c){
-	return (int)c;
-}
+// char char_to_byte(char c){
+// 	return (int)c;
+// }
 
 int dissasemble_LD(char arg1, int arg2){
 	std::cout<<"LD "<<arg1<<",$"<<arg2<<std::endl; 
