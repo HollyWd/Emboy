@@ -39,123 +39,114 @@ void print_char_vect(std::vector<char>& vect){
 // 	return (int)c;
 // }
 
-int dissasemble_LD(char arg1, int arg2){
-	std::cout<<"LD "<<arg1<<",$"<<arg2<<std::endl; 
-	return 2; //opbytes
+int print_cmd(const char * cmd, const char * arg1="", const char * arg2=""){
+		std::cout<<cmd<<" "<<arg1<<","<<arg2<<std::endl;
+		return 1; 
 }
 
-int dissasemble_LD(char arg1, char arg2){
-	std::cout<<"LD "<<arg1<<","<<arg2<<std::endl; 
-	return 1; //opbytes
+int print_cmd(const char * cmd, const char * arg1, const int arg2){
+		std::cout<<cmd<<" "<<arg1<<",$"<<arg2<<std::endl; 
+		return 2; 
 }
 
-int dissasemble_LD(char arg1, const char * arg2){
-	std::cout<<"LD "<<arg1<<","<<arg2<<std::endl; 
-	return 1; //opbytes
-}
-
-int dissasemble_LD(const char *arg1, int arg2){
-	std::cout<<"LD "<<arg1<<",$"<<arg2<<std::endl; 
-	return 2; //opbytes
-}
-
-int dissasemble_LD(const char *arg1, char arg2){
-	std::cout<<"LD "<<arg1<<","<<arg2<<std::endl; 
-	return 1; //opbytes
+int print_cmd(const char * cmd, const char * arg1, const int arg2_lb, const int arg2_ub){
+		std::cout<<cmd<<" "<<arg1<<",$"<<(int)(arg2_lb+(arg2_ub<<8))<<std::endl; 
+		return 3; 
 }
 
 int disassemble(std::vector<char>::iterator& it){
 	
 	//std::cout<<"opcode = "<<std::hex << opcode <<std::endl; 
 	int opcode = *it;
-	int opbytes = 0; //number of bytes used by the operator
+	int opbytes = 1; //number of bytes used by the operator
 	int add1 = 0;
 
 	switch(opcode){
 		
+		
 
 		//LD
-		case 0x06 : opbytes = dissasemble_LD('B', (int)*(it+1)); break;	
-		case 0x0e : opbytes = dissasemble_LD('C', (int)*(it+1)); break;	
-		case 0x16 : opbytes = dissasemble_LD('D', (int)*(it+1)); break;	
-		case 0x1E : opbytes = dissasemble_LD('E', (int)*(it+1)); break;	
-		case 0x26 : opbytes = dissasemble_LD('H', (int)*(it+1)); break;	
-		case 0x2E : opbytes = dissasemble_LD('L', (int)*(it+1)); break;	
-		case 0x3E : opbytes = dissasemble_LD('A', (int)*(it+1));break;
-		case 0x36 : std::cout<<"(HL),$"<<(int)*(it+1)<<std::endl; opbytes = 2; break;
+		case 0x06 : opbytes = print_cmd("LD", "B", *(it+1)); break;
+		case 0x0e : opbytes = print_cmd("LD", "C", *(it+1)); break;	
+		case 0x16 : opbytes = print_cmd("LD", "D", *(it+1)); break;	
+		case 0x1E : opbytes = print_cmd("LD", "E", *(it+1)); break;	
+		case 0x26 : opbytes = print_cmd("LD", "H", *(it+1)); break;	
+		case 0x2E : opbytes = print_cmd("LD", "L", *(it+1)); break;	
+		case 0x3E : opbytes = print_cmd("LD", "A", *(it+1)); break;
+		case 0x36 : opbytes = print_cmd("LD", "(HL)", *(it+1));break;
 		
 
 		
-		case 0x78 : opbytes = dissasemble_LD('A', 'B'); break;
-		case 0x79 : opbytes = dissasemble_LD('A', 'C'); break;
-		case 0x7A : opbytes = dissasemble_LD('A', 'D'); break;
-		case 0x7B : opbytes = dissasemble_LD('A', 'E'); break;
-		case 0x7C : opbytes = dissasemble_LD('A', 'H'); break;
-		case 0x7D : opbytes = dissasemble_LD('A', 'L'); break;
-		case 0x7E : opbytes = dissasemble_LD('A', "(HL)"); break;
-		case 0x7F : opbytes = dissasemble_LD('A', 'A'); break;
-		case 0x40 : opbytes = dissasemble_LD('B', 'B'); break;
-		case 0x41 : opbytes = dissasemble_LD('B', 'C'); break;
-		case 0x42 : opbytes = dissasemble_LD('B', 'D'); break;
-		case 0x43 : opbytes = dissasemble_LD('B', 'E'); break;
-		case 0x44 : opbytes = dissasemble_LD('B', 'H'); break;
-		case 0x45 : opbytes = dissasemble_LD('B', 'L'); break;
-		case 0x46 : opbytes = dissasemble_LD('B', "(HL)"); break;
-		case 0x47 : opbytes = dissasemble_LD('B', 'A'); break;
-		case 0x48 : opbytes = dissasemble_LD('C', 'B'); break;
-		case 0x49 : opbytes = dissasemble_LD('C', 'C'); break;
-		case 0x4A : opbytes = dissasemble_LD('C', 'D'); break;
-		case 0x4B : opbytes = dissasemble_LD('C', 'E'); break;
-		case 0x4C : opbytes = dissasemble_LD('C', 'H'); break;
-		case 0x4D : opbytes = dissasemble_LD('C', 'L'); break;
-		case 0x4E : opbytes = dissasemble_LD('C', "(HL)"); break;
-		case 0x4F : opbytes = dissasemble_LD('C', 'A'); break;
-		case 0x50 : opbytes = dissasemble_LD('D', 'B'); break;
-		case 0x51 : opbytes = dissasemble_LD('D', 'C'); break;
-		case 0x52 : opbytes = dissasemble_LD('D', 'D'); break;
-		case 0x53 : opbytes = dissasemble_LD('D', 'E'); break;
-		case 0x54 : opbytes = dissasemble_LD('D', 'H'); break;
-		case 0x55 : opbytes = dissasemble_LD('D', 'L'); break;
-		case 0x56 : opbytes = dissasemble_LD('D', "(HL)"); break;
-		case 0x57 : opbytes = dissasemble_LD('D', 'A'); break;
-		case 0x58 : opbytes = dissasemble_LD('E', 'B'); break;
-		case 0x59 : opbytes = dissasemble_LD('E', 'C'); break;
-		case 0x5A : opbytes = dissasemble_LD('E', 'D'); break;
-		case 0x5B : opbytes = dissasemble_LD('E', 'E'); break;
-		case 0x5C : opbytes = dissasemble_LD('E', 'H'); break;
-		case 0x5D : opbytes = dissasemble_LD('E', 'L'); break;
-		case 0x5E : opbytes = dissasemble_LD('E', "(HL)"); break;
-		case 0x5F : opbytes = dissasemble_LD('E', 'A'); break;
-		case 0x60 : opbytes = dissasemble_LD('H', 'B'); break;
-		case 0x61 : opbytes = dissasemble_LD('H', 'C'); break;
-		case 0x62 : opbytes = dissasemble_LD('H', 'D'); break;
-		case 0x63 : opbytes = dissasemble_LD('H', 'E'); break;
-		case 0x64 : opbytes = dissasemble_LD('H', 'H'); break;
-		case 0x65 : opbytes = dissasemble_LD('H', 'L'); break;
-		case 0x66 : opbytes = dissasemble_LD('H', "(HL)"); break;
-		case 0x67 : opbytes = dissasemble_LD('H', 'A'); break;
-		case 0x68 : opbytes = dissasemble_LD('L', 'B'); break;
-		case 0x69 : opbytes = dissasemble_LD('L', 'C'); break;
-		case 0x6A : opbytes = dissasemble_LD('L', 'D'); break;
-		case 0x6B : opbytes = dissasemble_LD('L', 'E'); break;
-		case 0x6C : opbytes = dissasemble_LD('L', 'H'); break;
-		case 0x6D : opbytes = dissasemble_LD('L', 'L'); break;
-		case 0x6E : opbytes = dissasemble_LD('L', "(HL)"); break;
-		case 0x6F : opbytes = dissasemble_LD('L', 'A'); break;
-		case 0x70 : opbytes = dissasemble_LD("(HL)", 'B'); break;
-		case 0x71 : opbytes = dissasemble_LD("(HL)", 'C'); break;
-		case 0x72 : opbytes = dissasemble_LD("(HL)", 'D'); break;
-		case 0x73 : opbytes = dissasemble_LD("(HL)", 'E'); break;
-		case 0x74 : opbytes = dissasemble_LD("(HL)", 'H'); break;
-		case 0x75 : opbytes = dissasemble_LD("(HL)", 'L'); break;
-		case 0x77 : opbytes = dissasemble_LD("(HL)",'A'); break;
+		case 0x78 : opbytes = print_cmd("LD", "A", "B"); break;
+		case 0x79 : opbytes = print_cmd("LD", "A", "C"); break;
+		case 0x7A : opbytes = print_cmd("LD", "A", "D"); break;
+		case 0x7B : opbytes = print_cmd("LD", "A", "E"); break;
+		case 0x7C : opbytes = print_cmd("LD", "A", "H"); break;
+		case 0x7D : opbytes = print_cmd("LD", "A", "L"); break;
+		case 0x7E : opbytes = print_cmd("LD", "A", "(HL)"); break;
+		case 0x7F : opbytes = print_cmd("LD", "A", "A"); break;
+		case 0x40 : opbytes = print_cmd("LD", "B", "B"); break;
+		case 0x41 : opbytes = print_cmd("LD", "B", "C"); break;
+		case 0x42 : opbytes = print_cmd("LD", "B", "D"); break;
+		case 0x43 : opbytes = print_cmd("LD", "B", "E"); break;
+		case 0x44 : opbytes = print_cmd("LD", "B", "H"); break;
+		case 0x45 : opbytes = print_cmd("LD", "B", "L"); break;
+		case 0x46 : opbytes = print_cmd("LD", "B", "(HL)"); break;
+		case 0x47 : opbytes = print_cmd("LD", "B", "A"); break;
+		case 0x48 : opbytes = print_cmd("LD", "C", "B"); break;
+		case 0x49 : opbytes = print_cmd("LD", "C", "C"); break;
+		case 0x4A : opbytes = print_cmd("LD", "C", "D"); break;
+		case 0x4B : opbytes = print_cmd("LD", "C", "E"); break;
+		case 0x4C : opbytes = print_cmd("LD", "C", "H"); break;
+		case 0x4D : opbytes = print_cmd("LD", "C", "L"); break;
+		case 0x4E : opbytes = print_cmd("LD", "C", "(HL)"); break;
+		case 0x4F : opbytes = print_cmd("LD", "C", "A"); break;
+		case 0x50 : opbytes = print_cmd("LD", "D", "B"); break;
+		case 0x51 : opbytes = print_cmd("LD", "D", "C"); break;
+		case 0x52 : opbytes = print_cmd("LD", "D", "D"); break;
+		case 0x53 : opbytes = print_cmd("LD", "D", "E"); break;
+		case 0x54 : opbytes = print_cmd("LD", "D", "H"); break;
+		case 0x55 : opbytes = print_cmd("LD", "D", "L"); break;
+		case 0x56 : opbytes = print_cmd("LD", "D", "(HL)"); break;
+		case 0x57 : opbytes = print_cmd("LD", "D", "A"); break;
+		case 0x58 : opbytes = print_cmd("LD", "E", "B"); break;
+		case 0x59 : opbytes = print_cmd("LD", "E", "C"); break;
+		case 0x5A : opbytes = print_cmd("LD", "E", "D"); break;
+		case 0x5B : opbytes = print_cmd("LD", "E", "E"); break;
+		case 0x5C : opbytes = print_cmd("LD", "E", "H"); break;
+		case 0x5D : opbytes = print_cmd("LD", "E", "L"); break;
+		case 0x5E : opbytes = print_cmd("LD", "E", "(HL)"); break;
+		case 0x5F : opbytes = print_cmd("LD", "E", "A"); break;
+		case 0x60 : opbytes = print_cmd("LD", "H", "B"); break;
+		case 0x61 : opbytes = print_cmd("LD", "H", "C"); break;
+		case 0x62 : opbytes = print_cmd("LD", "H", "D"); break;
+		case 0x63 : opbytes = print_cmd("LD", "H", "E"); break;
+		case 0x64 : opbytes = print_cmd("LD", "H", "H"); break;
+		case 0x65 : opbytes = print_cmd("LD", "H", "L"); break;
+		case 0x66 : opbytes = print_cmd("LD", "H", "(HL)"); break;
+		case 0x67 : opbytes = print_cmd("LD", "H", "A"); break;
+		case 0x68 : opbytes = print_cmd("LD", "L", "B"); break;
+		case 0x69 : opbytes = print_cmd("LD", "L", "C"); break;
+		case 0x6A : opbytes = print_cmd("LD", "L", "D"); break;
+		case 0x6B : opbytes = print_cmd("LD", "L", "E"); break;
+		case 0x6C : opbytes = print_cmd("LD", "L", "H"); break;
+		case 0x6D : opbytes = print_cmd("LD", "L", "L"); break;
+		case 0x6E : opbytes = print_cmd("LD", "L", "(HL)"); break;
+		case 0x6F : opbytes = print_cmd("LD", "L", "A"); break;
+		case 0x70 : opbytes = print_cmd("LD", "(HL)", "B"); break;
+		case 0x71 : opbytes = print_cmd("LD", "(HL)", "C"); break;
+		case 0x72 : opbytes = print_cmd("LD", "(HL)", "D"); break;
+		case 0x73 : opbytes = print_cmd("LD", "(HL)", "E"); break;
+		case 0x74 : opbytes = print_cmd("LD", "(HL)", "H"); break;
+		case 0x75 : opbytes = print_cmd("LD", "(HL)", "L"); break;
+		case 0x77 : opbytes = print_cmd("LD", "(HL)","A"); break;
 
-		case 0x0A : opbytes = dissasemble_LD('A',"(BC)"); break;
-		case 0x1A : opbytes = dissasemble_LD('A',"(DE)"); break;
+		case 0x0A : opbytes = print_cmd("LD", "A","(BC)"); break;
+		case 0x1A : opbytes = print_cmd("LD", "A","(DE)"); break;
 
 
-		case 0x02 : opbytes = dissasemble_LD("(BC)",'A'); break;
-		case 0x12 : opbytes = dissasemble_LD("(DE)",'A'); break;
+		case 0x02 : opbytes = print_cmd("LD", "(BC)","A"); break;
+		case 0x12 : opbytes = print_cmd("LD", "(DE)","A"); break;
 		
 		case 0xEA : 
 		{	//LD (nn),A
@@ -170,14 +161,14 @@ int disassemble(std::vector<char>::iterator& it){
 			break;
 		}
 				
-		case 0xE2 : opbytes = dissasemble_LD("($FF00+C)",'A'); break;
-		case 0xF2 : opbytes = dissasemble_LD('A',"($FF00+C)"); break;
+		case 0xE2 : opbytes = print_cmd("LD", "($FF00+C)","A"); break;
+		case 0xF2 : opbytes = print_cmd("LD", "A","($FF00+C)"); break;
 
-		case 0x3a : opbytes = dissasemble_LD('A',"(HLD)"); break;
-		case 0x32 : opbytes = dissasemble_LD("(HLD)",'A'); break;
+		case 0x3a : opbytes = print_cmd("LD", "A","(HLD)"); break;
+		case 0x32 : opbytes = print_cmd("LD", "(HLD)","A"); break;
 	
-		case 0x2a : opbytes = dissasemble_LD('A',"(HLI)"); break;
-		case 0x22 : opbytes = dissasemble_LD("(HLI)",'A'); break;
+		case 0x2a : opbytes = print_cmd("LD", "A","(HLI)"); break;
+		case 0x22 : opbytes = print_cmd("LD", "(HLI)","A"); break;
 
 		case 0xE0 : 
 		{
@@ -194,10 +185,11 @@ int disassemble(std::vector<char>::iterator& it){
 
 
 		//LD 16
-		case 0x01 : dissasemble_LD("BC", (int)(*(it+1)+(*(it+2)<<8))); opbytes = 3; break;
-		case 0x11 : dissasemble_LD("DE", (int)(*(it+1)+(*(it+2)<<8))); opbytes = 3; break;
-		case 0x21 : dissasemble_LD("HL", (int)(*(it+1)+(*(it+2)<<8))); opbytes = 3; break;
-		case 0x31 : dissasemble_LD("SP", (int)(*(it+1)+(*(it+2)<<8))); opbytes = 3; break;
+		//case 0x01 : print_cmd("LD", "BC", (int)(*(it+1)+(*(it+2)<<8))); opbytes = 3; break;
+		case 0x01 : opbytes = print_cmd("LD", "BC", *(it+1), *(it+2)); break;		
+		case 0x11 : opbytes = print_cmd("LD", "DE", *(it+1), *(it+2) ); break;
+		case 0x21 : opbytes = print_cmd("LD", "HL", *(it+1), *(it+2) ); break;
+		case 0x31 : opbytes = print_cmd("LD", "SP", *(it+1), *(it+2) ); break;
 
 		case 0xF9 : std::cout<<"LDHL SP, HL"<<std::endl; opbytes = 1; break;
 
@@ -327,14 +319,14 @@ int disassemble(std::vector<char>::iterator& it){
 		case 0x09 : std::cout<<"ADD HL,BC"<<std::endl; opbytes = 1; break;
 		case 0x19 : std::cout<<"ADD HL,DE"<<std::endl; opbytes = 1; break;
 		case 0x29 : std::cout<<"ADD HL,HL"<<std::endl; opbytes = 1; break;
-		case 0x39 : std::cout<<"ADD HL,SP"<<(int)*(it+1)<<std::endl; opbytes =2; break;
+		case 0x39 : std::cout<<"ADD HL,SP"<<std::endl; opbytes = 1; break;
 
-		case 0xE8 : std::cout<<"ADD SP"<<std::endl; opbytes = 1; break;
+		case 0xE8 : std::cout<<"ADD SP,$"<<(int)*(it+1)<<std::endl; opbytes = 2; break;
 
 		case 0x03 : std::cout<<"INC BC"<<std::endl; opbytes = 1; break;
 		case 0x13 : std::cout<<"INC DE"<<std::endl; opbytes = 1; break;
 		case 0x23 : std::cout<<"INC HL"<<std::endl; opbytes = 1; break;
-		case 0x33 : std::cout<<"INC SP"<<std::endl; opbytes = 1; break
+		case 0x33 : std::cout<<"INC SP"<<std::endl; opbytes = 1; break;
 
 		case 0x0B : std::cout<<"DEC BC"<<std::endl; opbytes = 1; break;
 		case 0x1B : std::cout<<"DEC DE"<<std::endl; opbytes = 1; break;
@@ -342,14 +334,21 @@ int disassemble(std::vector<char>::iterator& it){
 		case 0x3B : std::cout<<"DEC SP"<<std::endl; opbytes = 1; break;
 
 		//Miscellaneous
-		case 0x37 : std::cout<<"SWAP A"<<std::endl; opbytes = 1; break;
-		case 0x30 : std::cout<<"SWAP B"<<std::endl; opbytes = 1; break;
-		case 0x31 : std::cout<<"SWAP C"<<std::endl; opbytes = 1; break;
-		case 0x32 : std::cout<<"SWAP D"<<std::endl; opbytes = 1; break;
-		case 0x33 : std::cout<<"SWAP E"<<std::endl; opbytes = 1; break;
-		case 0x34 : std::cout<<"SWAP H"<<std::endl; opbytes = 1; break;
-		case 0x35 : std::cout<<"SWAP L"<<std::endl; opbytes = 1; break;
-		case 0x36 : std::cout<<"SWAP (HL)"<<std::endl; opbytes = 1; break;
+		case 0xCB :{
+			int n= *(it+1);
+			opbytes=2;
+			switch (n){
+				case 0x37 : std::cout<<"SWAP A"<<std::endl; break;
+				case 0x30 : std::cout<<"SWAP B"<<std::endl; break;
+				case 0x31 : std::cout<<"SWAP C"<<std::endl; break;
+				case 0x32 : std::cout<<"SWAP D"<<std::endl; break;
+				case 0x33 : std::cout<<"SWAP E"<<std::endl; break;
+				case 0x34 : std::cout<<"SWAP H"<<std::endl; break;
+				case 0x35 : std::cout<<"SWAP L"<<std::endl; break;
+				case 0x36 : std::cout<<"SWAP (HL)"<<std::endl; break;
+			}
+			break;
+		}
 
 		case 0x27 : std::cout<<"DAA "<<std::endl; opbytes = 1; break;
 		case 0x2F : std::cout<<"CPL "<<std::endl; opbytes = 1; break;
@@ -357,7 +356,7 @@ int disassemble(std::vector<char>::iterator& it){
 		case 0x37 : std::cout<<"SCF "<<std::endl; opbytes = 1; break;
 		case 0x00 : std::cout<<"NOP"<<std::endl; opbytes = 1; break;
 		case 0x76 : std::cout<<"HALT "<<std::endl; opbytes = 1; break;
-		case 0x10 : std::cout<<"STOP "<<(int)*(it+1)<<std::endl; opbytes =2; break;
+		case 0x10 : std::cout<<"STOP $"<<(int)*(it+1)<<std::endl; opbytes =2; break;
 		case 0xF3 : std::cout<<"DI "<<std::endl; opbytes = 1; break;
 		case 0xFB : std::cout<<"EI "<<std::endl; opbytes = 1; break;
 

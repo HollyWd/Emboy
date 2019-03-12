@@ -5,7 +5,7 @@ SRCDIR = src
 BUILDDIR = build
 
 disassembler : $(SRCDIR)/disassembler.cpp
-	g++ -c $(CPPFLAGS) $(SRCDIR)/disassembler.cpp -o $(BUILDDIR)/disassembler.o
+	g++ $(CPPFLAGS) $(SRCDIR)/disassembler.cpp -o $(BUILDDIR)/disassembler
 
 test_Disassembler : $(SRCDIR)/test_Disassembler.cpp $(BUILDDIR)/Disassembler.o
 	g++ $(LDFLAGS) $(SRCDIR)/test_Disassembler.cpp $(BUILDDIR)/Disassembler.o -o $(BUILDDIR)/test_Disassembler
@@ -15,4 +15,4 @@ $(BUILDDIR)/Disassembler.o : $(SRCDIR)/Disassembler.cpp $(SRCDIR)/Disassembler.h
 
 clean :
 	# -f will make the remove work even if the files do not exist
-	rm -f $(BUILDDIR)/Disassembler.o $(BUILDDIR)/test_Disassembler
+	rm -f $(BUILDDIR)/Disassembler.o $(BUILDDIR)/test_Disassembler $(BUILDDIR)/disassembler.o $(BUILDDIR)/disassembler

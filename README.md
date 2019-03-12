@@ -39,6 +39,7 @@ Thus, the binary file can be stored in a vector of bytes.
 
 # Todo
  - Finish desassembling 
+ - refactor with a print function
  - create disassembler class
  - create cpu class
 
