@@ -4,7 +4,6 @@
 #include <string> 
 #include <vector> 
 #include <iterator>
-//using namespace std;
 
 std::string string_to_hex(const std::string& input)
 {

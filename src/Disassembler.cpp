@@ -1,4 +1,3 @@
-
 #include "Disassembler.hpp"
 
 
@@ -12,7 +11,7 @@ void Disassembler::disassemble_instruction(const std::string &instruction_string
 		char_vect.push_back(number_b16);
 	}
 	for(auto c : char_vect){
-		std::cout<<c<<" "<<std::endl;
+		std::cout << std::hex << std::setfill('0') << std::setw(2)<<(int)c<<" "<<std::endl;
 	}
 
 }

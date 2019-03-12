@@ -9,7 +9,9 @@ https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet
 `../build/disassembler toto`
 
 -Wall = warnings exigents
--funsigned-char : define char as unsigned
+-funsigned-char : define char as unsigned char
+-g : change symbol table and debug metadata such that the code can be debugged with `gdb`
+-pg : with this, the executable can be profiled with `gprof`
 
 #Debug
 `$g++ -Wall main.cpp -o my_prog -g #Compile with -g option`
