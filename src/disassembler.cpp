@@ -68,11 +68,11 @@ int disassemble(std::vector<char>::iterator& it){
 	
 	//std::cout<<"opcode = "<<std::hex << opcode <<std::endl; 
 	int opcode = *it;
-	int opbytes = 1; //number of bytes used by the operator
+	int opbytes = 0; //number of bytes used by the operator
 	int add1 = 0;
 
 	switch(opcode){
-		case 0x00 : std::cout<<"NOP"<<std::endl; break;
+		
 
 		//LD
 		case 0x06 : opbytes = dissasemble_LD('B', (int)*(it+1)); break;	
@@ -323,6 +323,44 @@ int disassemble(std::vector<char>::iterator& it){
 		case 0x2D : std::cout<<"DEC L"<<std::endl; opbytes = 1; break;
 		case 0x35 : std::cout<<"DEC (HL)"<<std::endl; opbytes = 1; break;
 
+		//16 bit arithmetic
+		case 0x09 : std::cout<<"ADD HL,BC"<<std::endl; opbytes = 1; break;
+		case 0x19 : std::cout<<"ADD HL,DE"<<std::endl; opbytes = 1; break;
+		case 0x29 : std::cout<<"ADD HL,HL"<<std::endl; opbytes = 1; break;
+		case 0x39 : std::cout<<"ADD HL,SP"<<(int)*(it+1)<<std::endl; opbytes =2; break;
+
+		case 0xE8 : std::cout<<"ADD SP"<<std::endl; opbytes = 1; break;
+
+		case 0x03 : std::cout<<"INC BC"<<std::endl; opbytes = 1; break;
+		case 0x13 : std::cout<<"INC DE"<<std::endl; opbytes = 1; break;
+		case 0x23 : std::cout<<"INC HL"<<std::endl; opbytes = 1; break;
+		case 0x33 : std::cout<<"INC SP"<<std::endl; opbytes = 1; break
+
+		case 0x0B : std::cout<<"DEC BC"<<std::endl; opbytes = 1; break;
+		case 0x1B : std::cout<<"DEC DE"<<std::endl; opbytes = 1; break;
+		case 0x2B : std::cout<<"DEC HL"<<std::endl; opbytes = 1; break;
+		case 0x3B : std::cout<<"DEC SP"<<std::endl; opbytes = 1; break;
+
+		//Miscellaneous
+		case 0x37 : std::cout<<"SWAP A"<<std::endl; opbytes = 1; break;
+		case 0x30 : std::cout<<"SWAP B"<<std::endl; opbytes = 1; break;
+		case 0x31 : std::cout<<"SWAP C"<<std::endl; opbytes = 1; break;
+		case 0x32 : std::cout<<"SWAP D"<<std::endl; opbytes = 1; break;
+		case 0x33 : std::cout<<"SWAP E"<<std::endl; opbytes = 1; break;
+		case 0x34 : std::cout<<"SWAP H"<<std::endl; opbytes = 1; break;
+		case 0x35 : std::cout<<"SWAP L"<<std::endl; opbytes = 1; break;
+		case 0x36 : std::cout<<"SWAP (HL)"<<std::endl; opbytes = 1; break;
+
+		case 0x27 : std::cout<<"DAA "<<std::endl; opbytes = 1; break;
+		case 0x2F : std::cout<<"CPL "<<std::endl; opbytes = 1; break;
+		case 0x3F : std::cout<<"CCF "<<std::endl; opbytes = 1; break;
+		case 0x37 : std::cout<<"SCF "<<std::endl; opbytes = 1; break;
+		case 0x00 : std::cout<<"NOP"<<std::endl; opbytes = 1; break;
+		case 0x76 : std::cout<<"HALT "<<std::endl; opbytes = 1; break;
+		case 0x10 : std::cout<<"STOP "<<(int)*(it+1)<<std::endl; opbytes =2; break;
+		case 0xF3 : std::cout<<"DI "<<std::endl; opbytes = 1; break;
+		case 0xFB : std::cout<<"EI "<<std::endl; opbytes = 1; break;
+
 		//JP
 		case 0xc3 : 
 			std::cout<<"JP ";
@@ -340,6 +378,9 @@ int disassemble(std::vector<char>::iterator& it){
 
 	    default:
 	        std::cout<<"Instruction not implemented yet"<<std::endl;
+	}
+	if (opbytes<1){
+		throw "Instruction should not have less than 1 opbyte";
 	}
 	return opbytes;
 }
