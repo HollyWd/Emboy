@@ -35,6 +35,26 @@ In C++, reading in a binary file can be done as follow:
 
 Thus, the binary file can be stored in a vector of bytes.
 
+### Iterating through the bytes
+I used an iterator at first but this cause me some troubles. Indeed, when I jump several opbytes, I can get out the vector of byte without the system noticing it. So I have to check on every iteration that I am still it the vector (see below) and I find it ugly... I plan to use the `[]` operator for vectors with an index when I will emulate the CPU. Moreover, the CPU will have a program counter `PC` register that will serve as an array index. 
+
+	std::vector<char>::iterator it = char_vect.begin();
+
+	while (it!=char_vect.end()){
+		try{
+			std::cout<<"0x"<<std::hex<<std::setfill('0') << std::setw(2)<<(int)*it<<" ";
+			it+=disassemble(it);
+			//check that it do not overpass end
+			if (size_t(it - char_vect.begin())>char_vect.size()){
+				throw "Try to disassemble instruction outside of memory bounds";
+			}
+		}
+		catch(const char * c){
+			std::cerr << "Fatal error: " << c << std::endl;
+			return 1;
+		}
+	}
+
 ## Compilation
 
 ### g++
