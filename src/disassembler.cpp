@@ -412,8 +412,10 @@ int main(int argc, char *argv[]) {
 
 	while (it!=char_vect.end()){
 		try{
-			std::cout<<"0x"<<std::hex<<std::setfill('0') << std::setw(2)<<(int)*it<<" ";
+			//std::cout<<"0x"<<std::hex<<std::setfill('0') << std::setw(2)<<(int)*it<<" ";
+			std::cout<<"0x"<<std::hex<<std::setfill('0') << std::setw(2)<<it - char_vect.begin()<<" ";
 			it+=disassemble(it);
+
 			//check that it do not overpass end
 			if (size_t(it - char_vect.begin())>char_vect.size()){
 				throw "Try to disassemble instruction outside of memory bounds";

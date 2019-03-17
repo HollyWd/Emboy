@@ -1,6 +1,9 @@
 #include <vector>
 #include <cstdint>
 
+const MEM_SIZE = 65536;
+const CARTRIDGE_SIZE = 32768;
+
 struct Flag{
 	Z; //Zero flag
 	N; //Substract flag
@@ -25,7 +28,7 @@ class Cpu {
 		Flag flag;
 
 	public :
-		Cpu();
-		loadCartridge(std::vector<char> cartridge);
-		emulate();
+		void Cpu();
+		void loadCartridge(std::vector<char> cartridge);
+		void emulate();
 }
