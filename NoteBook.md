@@ -35,6 +35,9 @@ In C++, reading in a binary file can be done as follow:
 
 Thus, the binary file can be stored in a vector of bytes.
 
+### Cartridge
+I started with a Zelda cartridge since I was desassembled on http://computerarcheology.com/ and I notices the bytes where 7 times more numerous than the expected 32kB size. The cartridge actually contains several *banks* that can be plugged in the CPU memory between 4000 and 8000.
+
 ### Iterating through the bytes
 I used an iterator at first but this cause me some troubles. Indeed, when I jump several opbytes, I can get out the vector of byte without the system noticing it. So I have to check on every iteration that I am still it the vector (see below) and I find it ugly... I plan to use the `[]` operator for vectors with an index when I will emulate the CPU. Moreover, the CPU will have a program counter `PC` register that will serve as an array index. 
 
