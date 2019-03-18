@@ -1,34 +1,37 @@
 #include <vector>
 #include <cstdint>
+#include <iostream>
+#include <algorithm>
+#include <fstream>
 
-const MEM_SIZE = 65536;
-const CARTRIDGE_SIZE = 32768;
+const int MEM_SIZE = 65536;
+const int CARTRIDGE_SIZE = 32768;
 
 struct Flag{
-	Z; //Zero flag
-	N; //Substract flag
-	H; //Half Carry Flag
-	C; // Carry flag
-}
+	uint8_t z; //Zero flag
+	uint8_t n; //Substract flag
+	uint8_t h; //Half Carry Flag
+	uint8_t c; // Carry flag
+};
 
 class Cpu {
 	private : 
 		std::vector<char> memory;
 		//registers
-		uint_8 A;
-		uint_8 B;
-		uint_8 D;
-		uint_8 H;
-		uint_8 F;
-		uint_8 C;
-		uint_8 E;
-		uint_8 L;
-		uint_16 SP:
-		uint_16 PC;
+		uint8_t a;
+		uint8_t b;
+		uint8_t d;
+		uint8_t h;
+		uint8_t f;
+		uint8_t c;
+		uint8_t e;
+		uint8_t l;
+		uint16_t sp;
+		uint16_t pc;
 		Flag flag;
 
 	public :
-		void Cpu();
+		Cpu();
 		void loadCartridge(std::vector<char> cartridge);
 		void emulate();
-}
+};

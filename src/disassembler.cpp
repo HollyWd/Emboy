@@ -403,7 +403,7 @@ int main(int argc, char *argv[]) {
 	std::istreambuf_iterator<char> file_it_start(myfilestream), file_it_end;
 	std::vector<char> char_vect(file_it_start, file_it_end);
 
-	std::cout << "File is "<< char_vect.size() <<" bytes long"<<std::endl;;
+	std::cout << "File is "<< char_vect.size() <<" bytes long"<<std::endl;
 
 	//Hexadecimal dump to stdout
 	//print_char_vect(char_vect);
