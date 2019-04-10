@@ -4,8 +4,8 @@ LDFLAGS= -Wall -funsigned-char -pg -g #flags for linking
 SRCDIR = src
 BUILDDIR = build
 
-disassembler : $(SRCDIR)/disassembler.cpp
-	g++ $(CPPFLAGS) $(SRCDIR)/disassembler.cpp -o $(BUILDDIR)/disassembler
+disassembler : $(SRCDIR)/disassembler.cpp $(BUILDDIR)/Disassembler.o
+	g++ $(CPPFLAGS) $(SRCDIR)/disassembler.cpp $(BUILDDIR)/Disassembler.o -o $(BUILDDIR)/disassembler
 
 
 test_cpu : $(SRCDIR)/test_cpu.cpp $(BUILDDIR)/Cpu.o
