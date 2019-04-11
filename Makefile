@@ -19,8 +19,8 @@ emulator : $(SRCDIR)/emulator.cpp $(SRCDIR)/Cpu.o $(SRCDIR)/Disassembler.o $(SRC
 test_cpu : $(SRCDIR)/test_cpu.cpp $(BUILDDIR)/Cpu.o
 	g++ $(CPPFLAGS) $^ -o $(BUILDDIR)/$@ 
 
-test_disassembler : $(SRCDIR)/test_Disassembler.cpp $(BUILDDIR)/Disassembler.o
-	g++ $(LDFLAGS) $(SRCDIR)/test_Disassembler.cpp $(BUILDDIR)/Disassembler.o -o $(BUILDDIR)/test_Disassembler
+test_disassembler : $(SRCDIR)/test_disassembler.cpp $(BUILDDIR)/Disassembler.o
+	g++ $(CPPFLAGS) $^ -o $(BUILDDIR)/$@ 
 
 ## Build object files	
 #TODO fix .o destination (is src while should be build)

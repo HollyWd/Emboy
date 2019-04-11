@@ -13,6 +13,9 @@ https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet
 - g : change symbol table and debug metadata such that the code can be debugged with `gdb`
 - pg : with this, the executable can be profiled with `gprof`
 
+#### Git
+- add all tracked files to commit : git add -u
+
 #### Debug
 `$g++ -Wall main.cpp -o my_prog -g #Compile with -g option`
 `$gdb ./my_prog`
@@ -22,7 +25,7 @@ https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet
 `$gprof test gmon.out > analysis.txt`
 
 #### Dump hexa
-hexdump file
+`$hexdump filename`
 
 #### GB
 16 bit adress : 0000 -> FFFF
