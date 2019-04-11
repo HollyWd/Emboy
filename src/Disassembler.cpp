@@ -41,27 +41,27 @@ int Disassembler::disassemble_instruction(const std::string &instruction_string)
     // Todo actually disassemble
     //const std::vector<char> byte_vector(byte_vect.begin(), byte_vect.end());
     //Disassemble the vector of byte
-    //disassemble(byte_vector.begin());
+    disassemble_next_op(byte_vect.begin());
 
     return 0;
 }
 
-int Disassembler::print_cmd(const char * cmd, const char * arg1, const char * arg2){
+int Disassembler::print_cmd(const char * cmd, const char * arg1, const char * arg2) const{
         std::cout<<cmd<<" "<<arg1<<","<<arg2<<std::endl;
         return 1; 
 }
 
-int Disassembler::print_cmd(const char * cmd, const char * arg1, const int arg2){
+int Disassembler::print_cmd(const char * cmd, const char * arg1, const int arg2) const{
         std::cout<<cmd<<" "<<arg1<<",$"<<arg2<<std::endl; 
         return 2; 
 }
 
-int Disassembler::print_cmd(const char * cmd, const char * arg1, const int arg2_lb, const int arg2_ub){
+int Disassembler::print_cmd(const char * cmd, const char * arg1, const int arg2_lb, const int arg2_ub) const{
         std::cout<<cmd<<" "<<arg1<<",$"<<(int)(arg2_lb+(arg2_ub<<8))<<std::endl; 
         return 3; 
 }
 
-int Disassembler::disassemble(std::vector<char>::iterator& it){
+int Disassembler::disassemble_next_op(std::vector<char>::iterator it) const{
     
     //std::cout<<"opcode = "<<std::hex << opcode <<std::endl; 
     int opcode = *it;
@@ -387,5 +387,29 @@ int Disassembler::disassemble(std::vector<char>::iterator& it){
         throw "Instruction should not have less than 1 opbyte";
     }
     return opbytes;
+}
+
+int Disassembler::disassemble_all(std::vector<char> char_vect) const{
+
+    std::vector<char>::iterator it = char_vect.begin();
+
+    while (it!=char_vect.end()){
+        try{
+            //std::cout<<"0x"<<std::hex<<std::setfill('0') << std::setw(2)<<(int)*it<<" ";
+            std::cout<<"0x"<<std::hex<<std::setfill('0') << std::setw(2)<<it - char_vect.begin()<<" ";
+            it+=disassemble_next_op(it);
+
+            //check that it do not overpass end
+            if (size_t(it - char_vect.begin())>char_vect.size()){
+                throw "Try to disassemble instruction outside of memory bounds";
+            }
+        }
+        catch(const char * c){
+            std::cerr << "Fatal error: " << c << std::endl;
+            return 1;
+        }
+    }
+
+    return 0;
 }
 

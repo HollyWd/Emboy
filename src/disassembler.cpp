@@ -63,26 +63,9 @@ int main(int argc, char *argv[]) {
 	//Hexadecimal dump to stdout
 	//print_char_vect(char_vect);
 
-	std::vector<char>::iterator it = char_vect.begin();
-
 	Disassembler disassembler;
 
-	while (it!=char_vect.end()){
-		try{
-			//std::cout<<"0x"<<std::hex<<std::setfill('0') << std::setw(2)<<(int)*it<<" ";
-			std::cout<<"0x"<<std::hex<<std::setfill('0') << std::setw(2)<<it - char_vect.begin()<<" ";
-			it+=disassembler.disassemble(it);
-
-			//check that it do not overpass end
-			if (size_t(it - char_vect.begin())>char_vect.size()){
-				throw "Try to disassemble instruction outside of memory bounds";
-			}
-		}
-		catch(const char * c){
-			std::cerr << "Fatal error: " << c << std::endl;
-			return 1;
-		}
-	}
+	disassembler.disassemble_all(char_vect);
 
 
     return 0;

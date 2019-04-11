@@ -3,6 +3,7 @@
 #include <iostream>
 #include <algorithm>
 #include <fstream>
+#include <iomanip>
 
 const int MEM_SIZE = 65536;
 const int CARTRIDGE_SIZE = 32768;
@@ -34,4 +35,5 @@ class Cpu {
 		Cpu();
 		void loadCartridge(std::vector<char> cartridge);
 		void emulate();
+		void print_mem(int start_index=0, int end_index=0) const;
 };

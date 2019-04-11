@@ -7,9 +7,9 @@
 class Disassembler{
 
 	private:
-		int print_cmd(const char * cmd, const char * arg1="", const char * arg2="");
-		int print_cmd(const char * cmd, const char * arg1, const int arg2);
-		int print_cmd(const char * cmd, const char * arg1, const int arg2_lb, const int arg2_ub);
+		int print_cmd(const char * cmd, const char * arg1="", const char * arg2="") const;
+		int print_cmd(const char * cmd, const char * arg1, const int arg2) const;
+		int print_cmd(const char * cmd, const char * arg1, const int arg2_lb, const int arg2_ub) const;
 
 
 	public:
@@ -23,7 +23,8 @@ class Disassembler{
 		 * @return number of opbytes used by the instruction (1 to 3 usually)
 		 */
 		//int disassemble_instruction(const std::vector<char> &memory, int pc);
-		int disassemble(std::vector<char>::iterator& it);
+		int disassemble_next_op(std::vector<char>::iterator it) const;
 		int disassemble_instruction(const std::string & instruction) const;
+		int disassemble_all(std::vector<char>) const;
 		
 };
