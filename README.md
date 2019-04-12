@@ -18,8 +18,8 @@ The current disassembler is working however it is not complete and can be compil
 
 # Todo
  - Finish desassembling 
- - Encapsulate disassembling into a class
- - Create a cpu class
+ - Create a parser to be able to enter debug commands
+ - Start emulating the operations
 
 # Sources 
  - https://realboyemulator.files.wordpress.com
