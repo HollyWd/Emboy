@@ -35,5 +35,8 @@ class Cpu {
 		Cpu();
 		void loadCartridge(std::vector<char> cartridge);
 		void emulate();
-		void print_mem(int start_index=0, int end_index=0) const;
+		void print_mem(int start_index=0, int byte_nb=0) const;
+		std::vector<char>::const_iterator get_pc_iterator() const;
+		int get_pc() const { return this->pc;}
+		//int getValue() const { return this->value; } 
 };

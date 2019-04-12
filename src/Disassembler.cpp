@@ -61,7 +61,7 @@ int Disassembler::print_cmd(const char * cmd, const char * arg1, const int arg2_
         return 3; 
 }
 
-int Disassembler::disassemble_next_op(std::vector<char>::iterator it) const{
+int Disassembler::disassemble_next_op(std::vector<char>::const_iterator it) const{
     
     //std::cout<<"opcode = "<<std::hex << opcode <<std::endl; 
     int opcode = *it;
@@ -70,9 +70,7 @@ int Disassembler::disassemble_next_op(std::vector<char>::iterator it) const{
 
     switch(opcode){
                
-        //LD
-        case 0x06 : opbytes = print_cmd("LD", "B", *(it+1)); break;
-        case 0x0e : opbytes = print_cmd("LD", "C", *(it+1)); break; 
+        //LDaaa"C", *(it+1)); break; 
         case 0x16 : opbytes = print_cmd("LD", "D", *(it+1)); break; 
         case 0x1E : opbytes = print_cmd("LD", "E", *(it+1)); break; 
         case 0x26 : opbytes = print_cmd("LD", "H", *(it+1)); break; 
