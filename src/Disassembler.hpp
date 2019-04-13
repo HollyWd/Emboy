@@ -7,10 +7,19 @@
 class Disassembler{
 
 	private:
-		int print_cmd(const char * cmd, const char * arg1="", const char * arg2="") const;
-		int print_cmd(const char * cmd, const char * arg1, const int arg2) const;
-		int print_cmd(const char * cmd, const char * arg1, const int arg2_lb, const int arg2_ub) const;
 
+		//CMD 1
+		int print_cmd(const char * cmd, const int arg1) const;
+		//CMD 1,2
+		int print_cmd(const char * cmd, const int arg1_lb, const int arg1_ub) const;//CMD A,1
+		// CMD (A)(,B)
+		int print_cmd(const char * cmd, const char * arg1=NULL, const char * arg2=NULL) const;
+
+		int print_cmd(const char * cmd, const char * arg1, const int arg2) const;
+		//CMD A,12
+		int print_cmd(const char * cmd, const char * arg1, const int arg2_lb, const int arg2_ub) const;
+		//CMD 1,A
+		int print_cmd(const char * cmd, const int arg1, const char * arg2) const;
 
 	public:
 		/**

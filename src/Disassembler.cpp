@@ -46,9 +46,25 @@ int Disassembler::disassemble_instruction(const std::string &instruction_string)
     return 0;
 }
 
+//Todo handle separatly the 3 cases
 int Disassembler::print_cmd(const char * cmd, const char * arg1, const char * arg2) const{
-        std::cout<<cmd<<" "<<arg1<<","<<arg2<<std::endl;
+        std::cout<<cmd;
+        if (arg1!=NULL) std::cout<<" "<<arg1;
+        if (arg2!=NULL) std::cout<<","<<arg2;
+        std::cout<<std::endl;
         return 1; 
+}
+
+int Disassembler::print_cmd(const char * cmd, const int arg1) const{
+        std::cout<<cmd<<" $"<<arg1<<std::endl; 
+        return 2; 
+}
+
+int Disassembler::print_cmd(const char * cmd, const int arg1_lb, const int arg1_ub) const{
+        std::cout<<cmd<<" $";
+        std::cout<<"0x"<<std::hex<<std::setfill('0') << std::setw(4);
+        std::cout<<(int)(arg1_lb+(arg1_ub<<8))<<std::endl; 
+        return 3; 
 }
 
 int Disassembler::print_cmd(const char * cmd, const char * arg1, const int arg2) const{
@@ -56,8 +72,16 @@ int Disassembler::print_cmd(const char * cmd, const char * arg1, const int arg2)
         return 2; 
 }
 
+
+int Disassembler::print_cmd(const char * cmd, const int arg1, const char * arg2) const{
+        std::cout<<cmd<<" $"<<arg1<<","<<arg2<<std::endl; 
+        return 2; 
+}
+
 int Disassembler::print_cmd(const char * cmd, const char * arg1, const int arg2_lb, const int arg2_ub) const{
-        std::cout<<cmd<<" "<<arg1<<",$"<<(int)(arg2_lb+(arg2_ub<<8))<<std::endl; 
+        std::cout<<cmd<<" "<<arg1<<",$";
+        std::cout<<"0x"<<std::hex<<std::setfill('0') << std::setw(4);
+        std::cout<<(int)(arg2_lb+(arg2_ub<<8))<<std::endl; 
         return 3; 
 }
 
@@ -66,7 +90,6 @@ int Disassembler::disassemble_next_op(std::vector<char>::const_iterator it) cons
     //std::cout<<"opcode = "<<std::hex << opcode <<std::endl; 
     int opcode = *it;
     int opbytes = 1; //number of bytes used by the operator
-    int add1 = 0;
 
     switch(opcode){
                
@@ -341,16 +364,110 @@ int Disassembler::disassemble_next_op(std::vector<char>::const_iterator it) cons
             int n= *(it+1);
             opbytes=2;
             switch (n){
-                case 0x37 : std::cout<<"SWAP A"<<std::endl; break;
-                case 0x30 : std::cout<<"SWAP B"<<std::endl; break;
-                case 0x31 : std::cout<<"SWAP C"<<std::endl; break;
-                case 0x32 : std::cout<<"SWAP D"<<std::endl; break;
-                case 0x33 : std::cout<<"SWAP E"<<std::endl; break;
-                case 0x34 : std::cout<<"SWAP H"<<std::endl; break;
-                case 0x35 : std::cout<<"SWAP L"<<std::endl; break;
-                case 0x36 : std::cout<<"SWAP (HL)"<<std::endl; break;
-            }
-            break;
+                case 0x37 : print_cmd("SWAP", "A"); break;
+                case 0x30 : print_cmd("SWAP", "B"); break;
+                case 0x31 : print_cmd("SWAP", "C"); break;
+                case 0x32 : print_cmd("SWAP", "D"); break;
+                case 0x33 : print_cmd("SWAP", "E"); break;
+                case 0x34 : print_cmd("SWAP", "H"); break;
+                case 0x35 : print_cmd("SWAP", "L"); break;
+                case 0x36 : print_cmd("SWAP", "(HL)"); break;
+
+                //rotates and shifts
+                case 0x07 : print_cmd("RLC","A"); break;
+                case 0x00 : print_cmd("RLC","B"); break;
+                case 0x01 : print_cmd("RLC","C"); break;
+                case 0x02 : print_cmd("RLC","D"); break;
+                case 0x03 : print_cmd("RLC","E"); break;
+                case 0x04 : print_cmd("RLC","H"); break;
+                case 0x05 : print_cmd("RLC","L"); break;
+                case 0x06 : print_cmd("RLC","(HL)"); break;
+
+                case 0x17 : print_cmd("RL","A"); break;
+                case 0x10 : print_cmd("RL","B"); break;
+                case 0x11 : print_cmd("RL","C"); break;
+                case 0x12 : print_cmd("RL","D"); break;
+                case 0x13 : print_cmd("RL","E"); break;
+                case 0x14 : print_cmd("RL","H"); break;
+                case 0x15 : print_cmd("RL","L"); break;
+                case 0x16 : print_cmd("RL","(HL)"); break;
+
+                case 0x0F : print_cmd("RRC","A"); break;
+                case 0x08 : print_cmd("RRC","B"); break;
+                case 0x09 : print_cmd("RRC","C"); break;
+                case 0x0A : print_cmd("RRC","D"); break;
+                case 0x0B : print_cmd("RRC","E"); break;
+                case 0x0C : print_cmd("RRC","H"); break;
+                case 0x0D : print_cmd("RRC","L"); break;
+                case 0x0E : print_cmd("RRC","(HL)"); break;
+
+                case 0x1F : print_cmd("RL","A"); break;
+                case 0x18 : print_cmd("RL","B"); break;
+                case 0x19 : print_cmd("RL","C"); break;
+                case 0x1A : print_cmd("RL","D"); break;
+                case 0x1B : print_cmd("RL","E"); break;
+                case 0x1C : print_cmd("RL","H"); break;
+                case 0x1D : print_cmd("RL","L"); break;
+                case 0x1E : print_cmd("RL","(HL)"); break;
+
+                case 0x27 : print_cmd("SLA","A"); break;
+                case 0x20 : print_cmd("SLA","B"); break;
+                case 0x21 : print_cmd("SLA","C"); break;
+                case 0x22 : print_cmd("SLA","D"); break;
+                case 0x23 : print_cmd("SLA","E"); break;
+                case 0x24 : print_cmd("SLA","H"); break;
+                case 0x25 : print_cmd("SLA","L"); break;
+                case 0x26 : print_cmd("SLA","(HL)"); break;
+
+                case 0x2F : print_cmd("SRA","A"); break;
+                case 0x28 : print_cmd("SRA","B"); break;
+                case 0x29 : print_cmd("SRA","C"); break;
+                case 0x2A : print_cmd("SRA","D"); break;
+                case 0x2B : print_cmd("SRA","E"); break;
+                case 0x2C : print_cmd("SRA","H"); break;
+                case 0x2D : print_cmd("SRA","L"); break;
+                case 0x2E : print_cmd("SRA","(HL)"); break;
+
+                case 0x3F : print_cmd("SRL","A"); break;
+                case 0x38 : print_cmd("SRL","B"); break;
+                case 0x39 : print_cmd("SRL","C"); break;
+                case 0x3A : print_cmd("SRL","D"); break;
+                case 0x3B : print_cmd("SRL","E"); break;
+                case 0x3C : print_cmd("SRL","H"); break;
+                case 0x3D : print_cmd("SRL","L"); break;
+                case 0x3E : print_cmd("SRL","(HL)"); break;
+
+                //bit opcodes
+                case 0x47 : print_cmd("BIT",*(it+1),"A"); opbytes=3; break;
+                case 0x40 : print_cmd("BIT",*(it+1),"B"); opbytes=3; break;
+                case 0x41 : print_cmd("BIT",*(it+1),"C"); opbytes=3; break;
+                case 0x42 : print_cmd("BIT",*(it+1),"D"); opbytes=3; break;
+                case 0x43 : print_cmd("BIT",*(it+1),"E"); opbytes=3; break;
+                case 0x44 : print_cmd("BIT",*(it+1),"H"); opbytes=3; break;
+                case 0x45 : print_cmd("BIT",*(it+1),"L"); opbytes=3; break;
+                case 0x46 : print_cmd("BIT",*(it+1),"(HL)"); opbytes=3; break;
+
+                case 0xC7 : print_cmd("SET",*(it+1),"A"); opbytes=3; break;
+                case 0xC0 : print_cmd("SET",*(it+1),"B"); opbytes=3; break;
+                case 0xC1 : print_cmd("SET",*(it+1),"C"); opbytes=3; break;
+                case 0xC2 : print_cmd("SET",*(it+1),"D"); opbytes=3; break;
+                case 0xC3 : print_cmd("SET",*(it+1),"E"); opbytes=3; break;
+                case 0xC4 : print_cmd("SET",*(it+1),"H"); opbytes=3; break;
+                case 0xC5 : print_cmd("SET",*(it+1),"L"); opbytes=3; break;
+                case 0xC6 : print_cmd("SET",*(it+1),"(HL)"); opbytes=3; break;
+
+                case 0x87 : print_cmd("RES",*(it+1),"A"); opbytes=3; break;
+                case 0x80 : print_cmd("RES",*(it+1),"B"); opbytes=3; break;
+                case 0x81 : print_cmd("RES",*(it+1),"C"); opbytes=3; break;
+                case 0x82 : print_cmd("RES",*(it+1),"D"); opbytes=3; break;
+                case 0x83 : print_cmd("RES",*(it+1),"E"); opbytes=3; break;
+                case 0x84 : print_cmd("RES",*(it+1),"H"); opbytes=3; break;
+                case 0x85 : print_cmd("RES",*(it+1),"L"); opbytes=3; break;
+                case 0x86 : print_cmd("RES",*(it+1),"(HL)"); opbytes=3; break;
+
+
+
+            }break;
         }
 
         case 0x27 : std::cout<<"DAA "<<std::endl; opbytes = 1; break;
@@ -363,23 +480,69 @@ int Disassembler::disassemble_next_op(std::vector<char>::const_iterator it) cons
         case 0xF3 : std::cout<<"DI "<<std::endl; opbytes = 1; break;
         case 0xFB : std::cout<<"EI "<<std::endl; opbytes = 1; break;
 
-        //JP
-        case 0xc3 : 
-            std::cout<<"JP ";
-            add1 = *(it+1) + (*(it+2)<<8); // Less significan byte first TODO, test the jump adress, is it correct?
-            std::cout<<"$"<<std::hex<<std::setfill('0') << std::setw(4)<<add1<<std::endl;
-            opbytes=3; 
-            break;
+        //rotates and shifts
+        case 0x17 : opbytes = print_cmd("RLCA"); break; 
+        case 0x0F : opbytes = print_cmd("RLA"); break; 
+        case 0x07 : opbytes = print_cmd("RRCA"); break; 
+        case 0x1F : opbytes = print_cmd("RRA"); break;
 
-        case 0xff : 
-            std::cout<<"RST ";
-            add1 = *(it+1) + (*(it+2)<<4); // Less significan byte first
-            std::cout<<"$38"<<std::endl; //TODO What is $38, the value of a register?
-            opbytes=1; 
-            break;
+
+        //JP
+
+        // case 0xc3 : 
+        //     std::cout<<"JP ";
+        //     add1 = *(it+1) + (*(it+2)<<8); // Less significan byte first TODO, test the jump adress, is it correct?
+        //     std::cout<<"$"<<std::hex<<std::setfill('0') << std::setw(4)<<add1<<std::endl;
+        //     opbytes=3; 
+        //     break;
+        case 0xC3 : opbytes = print_cmd("JP",*(it+1),*(it+2)); break; 
+
+        case 0xC2 : opbytes = print_cmd("JP","NZ",*(it+1),*(it+2)); break; 
+        case 0xCA : opbytes = print_cmd("JP","Z",*(it+1),*(it+2)); break;  
+        case 0xD2 : opbytes = print_cmd("JP","NC",*(it+1),*(it+2)); break;  
+        case 0xDA : opbytes = print_cmd("JP","C",*(it+1),*(it+2)); break; 
+
+        case 0xE9 : opbytes = print_cmd("JP","(HL)"); break;
+
+        case 0x18 : opbytes = print_cmd("JR",*(it+1)); break; 
+
+        case 0x20 : opbytes = print_cmd("JR","NZ",*(it+1)); break; 
+        case 0x28 : opbytes = print_cmd("JR","Z",*(it+1)); break;  
+        case 0x30 : opbytes = print_cmd("JR","NC",*(it+1)); break;  
+        case 0x38 : opbytes = print_cmd("JR","C",*(it+1)); break; 
+
+        //call
+        case 0xCD : opbytes = print_cmd("CALL",*(it+1),*(it+2)); break;
+
+        case 0xC4 : opbytes = print_cmd("CALL","NZ",*(it+1),*(it+2)); break; 
+        case 0xCC : opbytes = print_cmd("CALL","Z",*(it+1),*(it+2)); break;  
+        case 0xD4 : opbytes = print_cmd("CALL","NC",*(it+1),*(it+2)); break;  
+        case 0xDC : opbytes = print_cmd("CALL","C",*(it+1),*(it+2)); break;  
+
+        //restart
+
+        case 0xC7 : opbytes = print_cmd("RST","00H"); break;
+        case 0xCF : opbytes = print_cmd("RST","08H"); break;
+        case 0xD7 : opbytes = print_cmd("RST","10H"); break;
+        case 0xDF : opbytes = print_cmd("RST","18H"); break;
+        case 0xE7 : opbytes = print_cmd("RST","20H"); break;
+        case 0xEF : opbytes = print_cmd("RST","28H"); break;
+        case 0xF7 : opbytes = print_cmd("RST","30H"); break;
+        case 0xFF : opbytes = print_cmd("RST","38H"); break;
+
+        //returns
+        case 0xC9 : opbytes = print_cmd("RET"); break;
+
+        case 0xC0 : opbytes = print_cmd("RET","NZ"); break; 
+        case 0xC8 : opbytes = print_cmd("RET","Z"); break;  
+        case 0xD0 : opbytes = print_cmd("RET","NC"); break;  
+        case 0xD8 : opbytes = print_cmd("RET","C"); break;
+
+        case 0xD9 : opbytes = print_cmd("RETI"); break;
 
         default:
             std::cout<<"Instruction not implemented yet"<<std::endl;
+            throw "instruction not disassembled";
     }
     if (opbytes<1){
         throw "Instruction should not have less than 1 opbyte";

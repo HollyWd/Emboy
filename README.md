@@ -6,7 +6,10 @@ I chose C++ for this project to gain some experience with this language. This is
 
 ## Progress
 
-I start with a simple program converting a binary game boy rom file into assembly code. The dessasembler implement about 75% of the instructions right now.
+I start with a simple program converting a binary game boy rom file into assembly code. Proportion of the instruction implemented:
+
+Disassembler: 100%
+Emualator: 0%
 
 ## Compile and test
 The current disassembler is working however it is not complete and can be compiled and test as following. It prints the assembly code from the binary rom and a message error for the instruction that are not implemented yet.
