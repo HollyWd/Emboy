@@ -47,13 +47,13 @@ std::vector<char>::const_iterator Cpu::get_pc_iterator() const{
 
 void Cpu::emulate(){
 
-	std::vector<char>::const_iterator it = get_pc_iterator();
- 	int opcode = *it;
+	//std::vector<char>::const_iterator it = get_pc_iterator();
+ 	//int opcode = *it;
     int opbytes = 1; //number of bytes used by the operator
 
     //std::cout<<"I'm emulating'"<<std::endl;
 
-	 switch(opcode){
+	 switch(opcode()){
                
  //        //LDaaa"C", *(it+1)); break; 
  //        case 0x16 : opbytes = print_cmd("LD", "D", *(it+1)); break; 
@@ -64,13 +64,23 @@ void Cpu::emulate(){
  //        case 0x36 : opbytes = print_cmd("LD", "(HL)", *(it+1));break;
 		case 0x00 : std::cout<<"NOP"<<std::endl; opbytes = 1; break;
 
-        case 0xc3 : {
-            
-            int address = *(it+1) + (*(it+2)<<8); // Less significan byte first TODO, test the jump adress, is it correct?
-            std::cout<<"Jumping to adress $"<<std::hex<<std::setfill('0') << std::setw(4)<<address<<std::endl;
-            this->pc = address;
-            return;
-        }
+		//jump
+        case 0xc3 : jump(nn()); return;
+
+        case 0xC2 : jump(nn(), !flag.z); return;
+        case 0xCA : jump(nn(),  flag.z); return; 
+        case 0xD2 : jump(nn(), !flag.c); return;
+        case 0xDA : jump(nn(),  flag.c); return;
+
+        case 0xE9 : jump(hl()); return;
+
+        case 0x18 : jump(pc+op1()); return;
+
+        case 0x20 : jump(pc+op1(), !flag.z); return; 
+        case 0x28 : jump(pc+op1(),  flag.z); return;  
+        case 0x30 : jump(pc+op1(), !flag.c); return;  
+        case 0x38 : jump(pc+op1(),  flag.c); return; 
+        
 
  //        case 0xff : 
  //            std::cout<<"RST ";
@@ -88,4 +98,10 @@ void Cpu::emulate(){
 
    this->pc+=opbytes;
    return;
+}
+
+void Cpu::jump(const int addr, const bool dojump){
+	if(dojump){
+		this->pc = addr;
+	}
 }

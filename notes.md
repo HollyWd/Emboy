@@ -14,7 +14,7 @@ https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet
 - pg : with this, the executable can be profiled with `gprof`
 
 #### Git
-- add all tracked files to commit : git add -u
+- add all tracked files to commit : `git add -u`
 
 #### Debug
 `$g++ -Wall main.cpp -o my_prog -g #Compile with -g option`

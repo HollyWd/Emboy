@@ -8,11 +8,13 @@
 const int MEM_SIZE = 65536;
 const int CARTRIDGE_SIZE = 32768;
 
+inline int word(const int lb, const int hb){ return lb + (hb<<8);}
+
 struct Flag{
-	uint8_t z; //Zero flag
-	uint8_t n; //Substract flag
-	uint8_t h; //Half Carry Flag
-	uint8_t c; // Carry flag
+	bool z; //Zero flag
+	bool n; //Substract flag
+	bool h; //Half Carry Flag
+	bool c; // Carry flag
 };
 
 class Cpu {
@@ -31,6 +33,10 @@ class Cpu {
 		uint16_t pc;
 		Flag flag;
 
+		int hl() const {return (this->h<<8) + this->l;}
+
+		void jump(const int addr, const bool dojump=true);
+
 	public :
 		Cpu();
 		void loadCartridge(std::vector<char> cartridge);
@@ -38,5 +44,12 @@ class Cpu {
 		void print_mem(int start_index=0, int byte_nb=0) const;
 		std::vector<char>::const_iterator get_pc_iterator() const;
 		int get_pc() const { return this->pc;}
+		int opcode() const { return this->memory[this->pc];}
+		int op1() const { return this->memory[this->pc+1];}
+		int op2() const { return this->memory[this->pc+2];}
+		int nn() const { return word(op1(), op2());}
+		void print_pc() const {std::cout<<"PC "<<this->pc<<std::endl;}
+
 		//int getValue() const { return this->value; } 
 };
+	

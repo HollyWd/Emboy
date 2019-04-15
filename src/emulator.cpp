@@ -38,6 +38,7 @@ int main(int argc, char* argv[]){
 			case 'n' : cpu.emulate(); break; //emulate next operation
 			case 'd' : dis.disassemble_next_op(cpu.get_pc_iterator()); break; //disassemble next operation
 			case 'm' : cpu.print_mem(cpu.get_pc(), 4); break; //print memory
+			case 'p' : cpu.print_pc();
 			case 'v' : //verbose display
 				cpu.print_mem(cpu.get_pc(), 4);
 				dis.disassemble_next_op(cpu.get_pc_iterator()); 
