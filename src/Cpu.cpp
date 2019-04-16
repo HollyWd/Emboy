@@ -80,6 +80,15 @@ void Cpu::emulate(){
         case 0x28 : jump(pc+op1(),  flag.z); return;  
         case 0x30 : jump(pc+op1(), !flag.c); return;  
         case 0x38 : jump(pc+op1(),  flag.c); return; 
+
+        //call
+        case 0xCD : call(nn()); return; 
+
+        case 0xC4 : call(nn(), !flag.z); return; 
+        case 0xCC : call(nn(),  flag.z); return;  
+        case 0xD4 : call(nn(), !flag.c); return;  
+        case 0xDC : call(nn(),  flag.c); return;  
+
         
 
  //        case 0xff : 
@@ -100,8 +109,32 @@ void Cpu::emulate(){
    return;
 }
 
-void Cpu::jump(const int addr, const bool dojump){
+void Cpu::jump(const uint16_t addr, const bool dojump){
 	if(dojump){
 		this->pc = addr;
+	}
+}
+
+void Cpu::decrement_sp(){
+	sp=sp-1;
+	assert(sp>SPMIN);
+}
+
+void Cpu::push(const uint8_t val){
+	decrement_sp();
+	memory[sp]=val;
+}
+
+void Cpu::push(const uint16_t val){
+	decrement_sp();
+	memory[sp]=val;
+	decrement_sp();
+	memory[sp]=val<<8;
+}
+
+void Cpu::call(const uint16_t addr, const bool dojump){
+	if (dojump){
+		push(uint16_t(pc+1));
+		pc=addr;
 	}
 }
