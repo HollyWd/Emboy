@@ -89,6 +89,26 @@ void Cpu::emulate(){
         case 0xD4 : call(nn(), !flag.c); return;  
         case 0xDC : call(nn(),  flag.c); return;  
 
+        //restart
+
+        case 0xC7 : call(0x00); break;
+        case 0xCF : call(0x08); break;
+        case 0xD7 : call(0x10); break;
+        case 0xDF : call(0x18); break;
+        case 0xE7 : call(0x20); break;
+        case 0xEF : call(0x28); break;
+        case 0xF7 : call(0x30); break;
+        case 0xFF : call(0x38); break;
+
+        //returns
+        case 0xC9 : opbytes = print_cmd("RET"); break;
+
+        case 0xC0 : opbytes = print_cmd("RET","NZ"); break; 
+        case 0xC8 : opbytes = print_cmd("RET","Z"); break;  
+        case 0xD0 : opbytes = print_cmd("RET","NC"); break;  
+        case 0xD8 : opbytes = print_cmd("RET","C"); break;
+
+        case 0xD9 : opbytes = print_cmd("RETI"); break;
         
 
  //        case 0xff : 
@@ -116,8 +136,13 @@ void Cpu::jump(const uint16_t addr, const bool dojump){
 }
 
 void Cpu::decrement_sp(){
-	sp=sp-1;
+	sp--;
 	assert(sp>SPMIN);
+}
+
+void Cpu::increment_sp(){
+	sp++;
+	assert(sp<SPMAX);
 }
 
 void Cpu::push(const uint8_t val){
@@ -132,9 +157,21 @@ void Cpu::push(const uint16_t val){
 	memory[sp]=val<<8;
 }
 
+uint16_t Cpu::pop(){
+	uint8_t hb = memory[sp];
+	increment_sp();
+	uint8_t lb = memory[sp];
+	increment_sp();
+	return (hb<<8) + lb;
+}
+
 void Cpu::call(const uint16_t addr, const bool dojump){
 	if (dojump){
 		push(uint16_t(pc+1));
 		pc=addr;
 	}
+}
+
+void Cpu::ret(const bool dojump){
+	uint16_t addr = 
 }
