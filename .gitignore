@@ -1,1 +1,7 @@
 /build
+/doc
+git_replace_mail.sh
+gmon.out
+rom/Zelda.asm
+*.o
+

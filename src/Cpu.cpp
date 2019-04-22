@@ -49,7 +49,8 @@ void Cpu::emulate(){
 
 	//std::vector<char>::const_iterator it = get_pc_iterator();
  	//int opcode = *it;
-    int opbytes = 1; //number of bytes used by the operator
+    int ob = 1; //number of bytes used by the operator
+    uint16_t pc_before = pc;
 
     //std::cout<<"I'm emulating'"<<std::endl;
 
@@ -62,53 +63,52 @@ void Cpu::emulate(){
  //        case 0x2E : opbytes = print_cmd("LD", "L", *(it+1)); break; 
  //        case 0x3E : opbytes = print_cmd("LD", "A", *(it+1)); break;
  //        case 0x36 : opbytes = print_cmd("LD", "(HL)", *(it+1));break;
-		case 0x00 : std::cout<<"NOP"<<std::endl; opbytes = 1; break;
+		case 0x00 : ob = 1; break;
 
 		//jump
-        case 0xc3 : jump(nn()); return;
+        case 0xc3 : jump(nn()); ob=3; break;
 
-        case 0xC2 : jump(nn(), !flag.z); return;
-        case 0xCA : jump(nn(),  flag.z); return; 
-        case 0xD2 : jump(nn(), !flag.c); return;
-        case 0xDA : jump(nn(),  flag.c); return;
+        case 0xC2 : jump(nn(), !flag.z); ob=3; break;
+        case 0xCA : jump(nn(),  flag.z); ob=3; break; 
+        case 0xD2 : jump(nn(), !flag.c); ob=3; break;
+        case 0xDA : jump(nn(),  flag.c); ob=3; break;
 
-        case 0xE9 : jump(hl()); return;
+        case 0xE9 : jump(hl()); ob=1; break;
 
-        case 0x18 : jump(pc+op1()); return;
+        case 0x18 : jump(pc+op1()); ob=2; break;
 
-        case 0x20 : jump(pc+op1(), !flag.z); return; 
-        case 0x28 : jump(pc+op1(),  flag.z); return;  
-        case 0x30 : jump(pc+op1(), !flag.c); return;  
-        case 0x38 : jump(pc+op1(),  flag.c); return; 
+        case 0x20 : jump(pc+op1(), !flag.z); ob=2; break; 
+        case 0x28 : jump(pc+op1(),  flag.z); ob=2; break;  
+        case 0x30 : jump(pc+op1(), !flag.c); ob=2; break;  
+        case 0x38 : jump(pc+op1(),  flag.c); ob=2; break; 
 
         //call
-        case 0xCD : call(nn()); return; 
+        case 0xCD : ob=3; call(nn(), ob); break; 
 
-        case 0xC4 : call(nn(), !flag.z); return; 
-        case 0xCC : call(nn(),  flag.z); return;  
-        case 0xD4 : call(nn(), !flag.c); return;  
-        case 0xDC : call(nn(),  flag.c); return;  
+        case 0xC4 : ob=3; call(nn(), ob, !flag.z); break; 
+        case 0xCC : ob=3; call(nn(), ob,  flag.z); break;  
+        case 0xD4 : ob=3; call(nn(), ob, !flag.c); break;  
+        case 0xDC : ob=3; call(nn(), ob,  flag.c); break;  
 
         //restart
+        case 0xC7 : ob=1; call(0x00,ob); break;
+        case 0xCF : ob=1; call(0x08,ob); break;
+        case 0xD7 : ob=1; call(0x10,ob); break;
+        case 0xDF : ob=1; call(0x18,ob); break;
+        case 0xE7 : ob=1; call(0x20,ob); break;
+        case 0xEF : ob=1; call(0x28,ob); break;
+        case 0xF7 : ob=1; call(0x30,ob); break;
+        case 0xFF : ob=1; call(0x38,ob); break;
 
-        case 0xC7 : call(0x00); break;
-        case 0xCF : call(0x08); break;
-        case 0xD7 : call(0x10); break;
-        case 0xDF : call(0x18); break;
-        case 0xE7 : call(0x20); break;
-        case 0xEF : call(0x28); break;
-        case 0xF7 : call(0x30); break;
-        case 0xFF : call(0x38); break;
+        // //returns
+        // case 0xC9 : opbytes = print_cmd("RET"); break;
 
-        //returns
-        case 0xC9 : opbytes = print_cmd("RET"); break;
+        // case 0xC0 : opbytes = print_cmd("RET","NZ"); break; 
+        // case 0xC8 : opbytes = print_cmd("RET","Z"); break;  
+        // case 0xD0 : opbytes = print_cmd("RET","NC"); break;  
+        // case 0xD8 : opbytes = print_cmd("RET","C"); break;
 
-        case 0xC0 : opbytes = print_cmd("RET","NZ"); break; 
-        case 0xC8 : opbytes = print_cmd("RET","Z"); break;  
-        case 0xD0 : opbytes = print_cmd("RET","NC"); break;  
-        case 0xD8 : opbytes = print_cmd("RET","C"); break;
-
-        case 0xD9 : opbytes = print_cmd("RETI"); break;
+        // case 0xD9 : opbytes = print_cmd("RETI"); break;
         
 
  //        case 0xff : 
@@ -117,7 +117,7 @@ void Cpu::emulate(){
  //            std::cout<<"$38"<<std::endl; //TODO What is $38, the value of a register?
  //            opbytes=1; 
  //            break;
-
+// Todo handel opbyte or not -> put in output
         default:
 	        std::cout<<"Instruction not implemented yet"<<std::endl;
     }
@@ -125,7 +125,9 @@ void Cpu::emulate(){
  //        throw "Instruction should not have less than 1 opbyte";
  //    }
 
-   this->pc+=opbytes;
+   if (pc==pc_before){
+   	pc+=ob;
+   }
    return;
 }
 
@@ -165,13 +167,13 @@ uint16_t Cpu::pop(){
 	return (hb<<8) + lb;
 }
 
-void Cpu::call(const uint16_t addr, const bool dojump){
+void Cpu::call(const uint16_t addr, const int opbytes, const bool dojump){
 	if (dojump){
-		push(uint16_t(pc+1));
+		push(uint16_t(pc+opbytes));
 		pc=addr;
 	}
 }
 
 void Cpu::ret(const bool dojump){
-	uint16_t addr = 
+	pc = pop();
 }

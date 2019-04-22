@@ -4,14 +4,14 @@
 https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet
 
 #### Compile
-`g++ -Wall disassembler.cpp -o ../build/disassembler -pg -g -funsigned-char
-`
-`../build/disassembler toto`
+make disassembler
+./build/disassembler rom/Zelda.gb
 
-- Wall = warnings exigents
-- funsigned-char : define char as unsigned char
-- g : change symbol table and debug metadata such that the code can be debugged with `gdb`
-- pg : with this, the executable can be profiled with `gprof`
+make emulator
+./build/emulator rom/Zelda.gb
+
+### Documentation
+doxygen Doxyfile
 
 #### Git
 - add all tracked files to commit : `git add -u`

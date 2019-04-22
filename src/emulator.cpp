@@ -14,7 +14,7 @@ int main(int argc, char* argv[]){
 	//Read input file
     std::cout << "Cartridge file is "<< argv[1]<<std::endl;
     std::vector<char> char_vect = utils::file_to_byte_vector(argv[1]);
-	std::cout << "Cartridge is "<< char_vect.size() <<" bytes long"<<std::endl;;
+	std::cout << "Cartridge is "<< char_vect.size() <<" bytes long"<<std::endl;
 
 	//Load cartidge into CPU memory
 	cpu.loadCartridge(char_vect);
@@ -24,28 +24,35 @@ int main(int argc, char* argv[]){
 	//Emulate and debug
 	std::cout << "Starting emulation..."<<std::endl<<std::endl;
 	
-	char input=0;
-	char cmd='v';
+	std::string input="";
+	std::string cmd="s";
 
 	while(true){
-		input = std::cin.get();	
-					
-		if(input!='\n'){
-			cmd=input; //if enter is pressed directly, the cmd do not change
-		}
+		std::cin>>input;
+		cmd=input;
+		// if(std::cin.get()!='\n'){
+		//  	cmd=input; //if enter is pressed directly, the cmd do not change
+		// }
+		// else{
 
-		switch (cmd){
-			case 'n' : cpu.emulate(); break; //emulate next operation
-			case 'd' : dis.disassemble_next_op(cpu.get_pc_iterator()); break; //disassemble next operation
-			case 'm' : cpu.print_mem(cpu.get_pc(), 4); break; //print memory
-			case 'p' : cpu.print_pc();
-			case 'v' : //verbose display
-				cpu.print_mem(cpu.get_pc(), 4);
-				dis.disassemble_next_op(cpu.get_pc_iterator()); 
-				cpu.emulate(); 
-				break;
+		// }
+								
+		//std::cout << "Entered  "<< input <<std::endl;
+
+		if (cmd=="e") cpu.emulate(); //emulate next operation
+		else if (cmd=="d") dis.disassemble_next_op(cpu.get_pc_iterator()); //disassemble next operation
+		//case "mem" : cpu.print_mem(cpu.get_pc(), 4); break; //print memory
+		else if (cmd=="pc") cpu.print_pc();
+		else if (cmd=="*pc") cpu.print_mem(cpu.get_pc(), 4);
+		else if (cmd=="sp") cpu.print_sp();
+		else if (cmd=="*sp") cpu.print_sp_content();
+		else { //(cmd=="s") //verbose display
+			cpu.print_mem(cpu.get_pc(), 4);
+			dis.disassemble_next_op(cpu.get_pc_iterator()); 
+			cpu.emulate(); 
 		}
 	}
+
 
 	return 0 ;
 }

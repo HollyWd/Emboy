@@ -63,3 +63,28 @@ I used an iterator at first but this cause me some troubles. Indeed, when I jump
 ### g++
 
 ### Makefile
+
+## Design
+
+**General design**
+
+The memory will be represented by a vector to provide easy access.
+
+We have two main classes, one handles the dissassembling and the other the CPU emulation.
+
+For the Disassembling class, I decided to use iterators to go through the rom, because it enables passing only one argument instead of the vector of bytes and an index. This brings the issue of going out of bounds if we do not check that `it<myvector.end()`.
+
+In the Cpu class, it was more natural to use an index since the program counter plays that roll and it can be accessible at any moment like the memory vector since they are class member. The rom could also have been made part of the Disassemble class, but I wanted this class to be independant from the data such that in one main, it can disassemble anything.
+
+**How to know if after executing an instruction we should increment the program counter with the number of opbytes or not?**
+
+Indeed, with jump instruction, we do not want to increment the pc with the opbytes after jumping.
+
+We could increment the pc when calling nn() op1() etc... but then we would risk to mess up the program when calling nn() in an other case. Moreover, what if op2 is called before op1.
+
+Instead we set an opbytes number for each opcode and increment the pc only if pc has not been changed by the instruction executed.
+
+
+## Documentation
+
+I use Doxygen which I installed with `apt-get install doxygen` . Then I needed to create a configuration file which works as a Makefile with the command `doxygen -g Doxyfile` where Doxyfile is optional and is the name of the config file. The documentation can be generated with the command `doxygen Doxyfile`. The markdown files of the project are even included in the documentation!
