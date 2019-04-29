@@ -6,12 +6,16 @@ Cpu::Cpu(){
 }
 
 //TODO check that cartridge size < 32kB = 32768 octets
-void Cpu::loadCartridge(std::vector<char> cartridge){
+void Cpu::load_cartridge(std::vector<char> cartridge){
 
 	// copy cartridge content to memory
 	std::copy(cartridge.begin(), cartridge.begin()+CARTRIDGE_SIZE, this->memory.begin());
 }
 
+void Cpu::load_debug_cartridge(std::string string_binary_code){
+	std::vector<char> debug_cartridge = utils::string_to_byte_vector(string_binary_code);
+	Cpu::load_cartridge(debug_cartridge);
+}
 
 void Cpu::print_mem(int start_index, int byte_nb) const{
 
@@ -44,6 +48,7 @@ void Cpu::print_mem(int start_index, int byte_nb) const{
 std::vector<char>::const_iterator Cpu::get_pc_iterator() const{
 	return this->memory.begin() + this->pc;
 }
+
 
 void Cpu::emulate(){
 

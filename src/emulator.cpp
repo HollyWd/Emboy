@@ -17,7 +17,7 @@ int main(int argc, char* argv[]){
 	std::cout << "Cartridge is "<< char_vect.size() <<" bytes long"<<std::endl;
 
 	//Load cartidge into CPU memory
-	cpu.loadCartridge(char_vect);
+	cpu.load_cartridge(char_vect);
 	std::cout << "Cartridge loaded!"<<std::endl;
 	//cpu.print_mem(0x100, 2);
 
@@ -45,7 +45,7 @@ int main(int argc, char* argv[]){
 		else if (cmd=="pc") cpu.print_pc();
 		else if (cmd=="*pc") cpu.print_mem(cpu.get_pc(), 4);
 		else if (cmd=="sp") cpu.print_sp();
-		else if (cmd=="*sp") cpu.print_sp_content();
+		else if (cmd=="*sp") cpu.print_stack(0);
 		else { //(cmd=="s") //verbose display
 			cpu.print_mem(cpu.get_pc(), 4);
 			dis.disassemble_next_op(cpu.get_pc_iterator()); 

@@ -1,10 +1,11 @@
 #include <vector>
 #include <cstdint>
-#include <iostream>
+
 #include <algorithm>
 #include <fstream>
 #include <iomanip>
 #include <cassert>
+#include "utils.hpp"
 
 const int MEM_SIZE = 65536;
 const int CARTRIDGE_SIZE = 32768;
@@ -62,19 +63,24 @@ class Cpu {
 		///Return the 16 bit value at sp and increment it twice.
 		/// the most significant bit is poped first
 		uint16_t pop();
-		void call(const uint16_t addr, const bool dojump=true);
+		void call(const uint16_t addr, int op, const bool dojump=true);
 		void ret(const bool dojump=true);
 
 	public :
 		Cpu();
-		void loadCartridge(std::vector<char> cartridge);
+		void load_cartridge(std::vector<char> cartridge);
+		void load_debug_cartridge(std::string binary_string);
 		void emulate();
+		void emulate(std::string string_binary_code);
 		void print_mem(int start_index=0, int byte_nb=0) const;
 		std::vector<char>::const_iterator get_pc_iterator() const;
-		int get_pc() const { return this->pc;}	
-		void print_pc() const {std::cout<<"PC "<<this->pc<<std::endl;}
-		void print_sp() const{std::cout<<"Stack pointer adress: "<<this->sp<<std::endl;}
-		void print_sp_content() const{std::cout<<"Stack head content: "<<this->memory[sp]<<std::endl;}
+		int get_pc() const { return this->pc;}
+		int get_sp() const { return this->sp;}
+		int get_mem(const uint8_t addr) const { return memory[sp];}
+		int get_stack(int offset=0) const {return memory[sp-offset];}	
+		void print_pc() const {std::cout<<"PC "<<pc<<std::endl;}
+		void print_sp() const{std::cout<<"Stack pointer adress: "<<sp<<std::endl;}
+		void print_stack(int offset=0) const{std::cout<<"Stack head -"<< offset<<" content: "<<memory[sp-0]<<std::endl;}
 
 
 		//int getValue() const { return this->value; } 

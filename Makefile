@@ -7,8 +7,9 @@ LDFLAGS= -Wall -funsigned-char -pg -g #flags for linking
 
 SRCDIR = src
 BUILDDIR = build
+INC = -I$(SRCDIR) -I$(SRCDIR)/tests
 
-disassembler : $(SRCDIR)/disassembler.cpp $(BUILDDIR)/Disassembler.o
+disassembler : $(SRCDIR)/disassembler.cpp $(BUILDDIR)/Disassembler.o $(BUILDDIR)/utils.o
 	g++ $(CPPFLAGS) $^ -o $(BUILDDIR)/$@ 
 #$^ = list of dependancies of upper line
 #$@ = target name
@@ -22,10 +23,13 @@ test_cpu : $(SRCDIR)/test_cpu.cpp $(BUILDDIR)/Cpu.o
 test_disassembler : $(SRCDIR)/test_disassembler.cpp $(BUILDDIR)/Disassembler.o
 	g++ $(CPPFLAGS) $^ -o $(BUILDDIR)/$@ 
 
+test_emulator : $(SRCDIR)/tests/test_emulator.cpp $(SRCDIR)/tests/Test.o $(SRCDIR)/Cpu.o
+	g++ $(CPPFLAGS) ${INC}  $^ -o $(BUILDDIR)/$@ 
+
 ## Build object files	
 #TODO fix .o destination (is src while should be build)
-$(BUILDDIR)/%.o : $(SRCDIR)/%.cpp $(SRCDIR)/%.hpp
-	g++ -c $(CPPFLAGS) $< -o $@
+$(BUILDDIR)/%.o : $(SRCDIR)/%.cpp $(SRCDIR)/%.hpp 
+	g++ -c $(CPPFLAGS) ${INC} $< -o $@
 # For all targets finishing by .o, build them with the cpp and hpp of the same name
 # -c = only compile as object file, not as exe
 # $< = first item in dependancies list
