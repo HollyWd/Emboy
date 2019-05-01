@@ -13,7 +13,7 @@ const std::vector<char> utils::file_to_byte_vector(const char* filename){
 
 const std::vector<char> utils::string_to_byte_vector(const std::string instruction_string){
 	std::vector<char> byte_vect;  
-	std::string sconvert("0123456789ABCDEF");
+	std::string sconvert("0123456789abcdef");
 
 	std::istringstream iss(instruction_string);
 

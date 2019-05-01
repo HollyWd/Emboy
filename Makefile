@@ -1,3 +1,4 @@
+CC = g++
 CPPFLAGS= -Wall -funsigned-char -pg -g #flags for compilation
 LDFLAGS= -Wall -funsigned-char -pg -g #flags for linking
 
@@ -10,31 +11,34 @@ BUILDDIR = build
 INC = -I$(SRCDIR) -I$(SRCDIR)/tests
 
 disassembler : $(SRCDIR)/disassembler.cpp $(BUILDDIR)/Disassembler.o $(BUILDDIR)/utils.o
-	g++ $(CPPFLAGS) $^ -o $(BUILDDIR)/$@ 
+	$(CC) $(CPPFLAGS) $^ -o $(BUILDDIR)/$@ 
 #$^ = list of dependancies of upper line
 #$@ = target name
 
-emulator : $(SRCDIR)/emulator.cpp $(SRCDIR)/Cpu.o $(SRCDIR)/Disassembler.o $(SRCDIR)/utils.o 
-	g++ $(CPPFLAGS) $^ -o $(BUILDDIR)/$@ 
+emulator : $(SRCDIR)/emulator.cpp $(BUILDDIR)/Cpu.o $(BUILDDIR)/Disassembler.o $(BUILDDIR)/utils.o 
+	$(CC) $(CPPFLAGS) $^ -o $(BUILDDIR)/$@ 
 
 test_cpu : $(SRCDIR)/test_cpu.cpp $(BUILDDIR)/Cpu.o
-	g++ $(CPPFLAGS) $^ -o $(BUILDDIR)/$@ 
+	$(CC) $(CPPFLAGS) $^ -o $(BUILDDIR)/$@ 
 
 test_disassembler : $(SRCDIR)/test_disassembler.cpp $(BUILDDIR)/Disassembler.o
-	g++ $(CPPFLAGS) $^ -o $(BUILDDIR)/$@ 
+	$(CC) $(CPPFLAGS) $^ -o $(BUILDDIR)/$@ 
 
-test_emulator : $(SRCDIR)/tests/test_emulator.cpp $(SRCDIR)/tests/Test.o $(SRCDIR)/Cpu.o
-	g++ $(CPPFLAGS) ${INC}  $^ -o $(BUILDDIR)/$@ 
+test_emulator : $(SRCDIR)/tests/test_emulator.cpp $(BUILDDIR)/Test.o $(BUILDDIR)/Cpu.o $(BUILDDIR)/utils.o 
+	$(CC) $(CPPFLAGS) ${INC}  $^ -o $(BUILDDIR)/$@ 
 
 ## Build object files	
 #TODO fix .o destination (is src while should be build)
-$(BUILDDIR)/%.o : $(SRCDIR)/%.cpp $(SRCDIR)/%.hpp 
-	g++ -c $(CPPFLAGS) ${INC} $< -o $@
+$(BUILDDIR)/%.o : $(SRCDIR)/%.cpp $(SRCDIR)/utils.hpp 
+	$(CC) -c $(CPPFLAGS) ${INC} $< -o $@
 # For all targets finishing by .o, build them with the cpp and hpp of the same name
 # -c = only compile as object file, not as exe
 # $< = first item in dependancies list
 
+$(BUILDDIR)/%.o : $(SRCDIR)/tests/%.cpp $(SRCDIR)/tests/%.hpp 
+	$(CC) -c $(CPPFLAGS) ${INC} $< -o $@
+
 
 clean :
 	# -f will make the remove work even if the files do not exist
-	rm -f $(BUILDDIR)/*
+	rm -f $(BUILDDIR)/* $(SRCDIR)/*.o 

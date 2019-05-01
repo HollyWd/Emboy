@@ -13,7 +13,7 @@ const int SP0 = 0xE000;
 const int SPMAX = 0xDFFF;
 const int SPMIN = 0xC000;
 
-inline int word(const int lb, const int hb){ return lb + (hb<<8);}
+inline uint16_t word(const uint8_t lb, const uint8_t hb){ return lb + (hb<<8);}
 
 struct Flag{
 	bool z; //Zero flag
@@ -68,19 +68,21 @@ class Cpu {
 
 	public :
 		Cpu();
+		void reset();
 		void load_cartridge(std::vector<char> cartridge);
+		///Load the string code in memory at PC. 
+		///The opcode should be in minuscule with spaces between the words. Exp: 01 0a ff.
 		void load_debug_cartridge(std::string binary_string);
 		void emulate();
-		void emulate(std::string string_binary_code);
-		void print_mem(int start_index=0, int byte_nb=0) const;
+		void print_mem(int start_index=-1, int byte_nb=1) const;
 		std::vector<char>::const_iterator get_pc_iterator() const;
 		int get_pc() const { return this->pc;}
 		int get_sp() const { return this->sp;}
 		int get_mem(const uint8_t addr) const { return memory[sp];}
 		int get_stack(int offset=0) const {return memory[sp-offset];}	
-		void print_pc() const {std::cout<<"PC "<<pc<<std::endl;}
-		void print_sp() const{std::cout<<"Stack pointer adress: "<<sp<<std::endl;}
-		void print_stack(int offset=0) const{std::cout<<"Stack head -"<< offset<<" content: "<<memory[sp-0]<<std::endl;}
+		void print_pc() const {std::cout<<"Program counter: "<<pc<<std::endl;}
+		void print_sp() const{std::cout<<"Stack pointer:: "<<sp<<std::endl;}
+		void print_stack(int offset=1) const ;
 
 
 		//int getValue() const { return this->value; } 

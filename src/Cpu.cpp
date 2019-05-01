@@ -1,36 +1,47 @@
 #include "Cpu.hpp"
 
 Cpu::Cpu(){
+	this->reset();
+}
+
+void Cpu::reset(){
 	this->pc=0x100;
-	this->memory = std::vector<char>(65536);
+	this->memory = std::vector<char>(65536,0);	
 }
 
 //TODO check that cartridge size < 32kB = 32768 octets
 void Cpu::load_cartridge(std::vector<char> cartridge){
-
+	this->reset();
 	// copy cartridge content to memory
-	std::copy(cartridge.begin(), cartridge.begin()+CARTRIDGE_SIZE, this->memory.begin());
+	auto cart_end = cartridge.end();
+	if (cartridge.size()>CARTRIDGE_SIZE){// case of several banks
+		cart_end = cartridge.begin()+CARTRIDGE_SIZE;
+	}
+	std::copy(cartridge.begin(), cart_end, this->memory.begin());
 }
 
 void Cpu::load_debug_cartridge(std::string string_binary_code){
+	this->reset();
 	std::vector<char> debug_cartridge = utils::string_to_byte_vector(string_binary_code);
-	Cpu::load_cartridge(debug_cartridge);
+	std::copy(debug_cartridge.begin(), debug_cartridge.end(), this->memory.begin());
+	this->pc=0x00;
 }
 
 void Cpu::print_mem(int start_index, int byte_nb) const{
 
 	int end_index=start_index+byte_nb+1;
 
-	if(start_index==0 && byte_nb==0){
+	if(start_index==-1){
 		end_index=MEM_SIZE;
 	}
-	else if(byte_nb==0){
-		end_index=start_index+1;
-	}
+	// else if(byte_nb==0){
+	// 	end_index=start_index+1;
+	// }
 	// for (int i=start_index; i<end_index; i++){
 	// 	std::cout<<std::hex<<std::setfill('0') << std::setw(4)<<i<<"    "<<(int)this->memory[i]<<std::endl;
 	// }
 
+	std::cout<<std::endl<<"Memory: "<<std::endl;
 	int i = start_index;
 	while (i<end_index){
 		printf("0x%04x:  ",i);
@@ -44,6 +55,18 @@ void Cpu::print_mem(int start_index, int byte_nb) const{
 		//std::cout<<*(buffer+pc)<<std::endl;
 	}
 }
+
+void Cpu::print_stack(int byte_nb) const{
+	std::cout<<std::endl<<"Stack: "<<std::endl;
+	std::cout<<"---------------------"<<std::endl;
+	for (int i=0; i<byte_nb;i++)
+	{
+		std::cout<<"|"<<std::dec<<std::setw(20) << std::right << memory[sp-i]<<"|"<<std::endl;
+		std::cout<<"---------------------"<<std::endl;
+	}
+		std::cout<<"|                   | "<<std::endl;
+}
+
 
 std::vector<char>::const_iterator Cpu::get_pc_iterator() const{
 	return this->memory.begin() + this->pc;
