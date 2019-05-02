@@ -6,6 +6,7 @@ Cpu::Cpu(){
 
 void Cpu::reset(){
 	this->pc=0x100;
+	this->sp=SP0;
 	this->memory = std::vector<char>(65536,0);	
 }
 
@@ -58,13 +59,13 @@ void Cpu::print_mem(int start_index, int byte_nb) const{
 
 void Cpu::print_stack(int byte_nb) const{
 	std::cout<<std::endl<<"Stack: "<<std::endl;
-	std::cout<<"---------------------"<<std::endl;
+	std::cout<<"----------"<<std::endl;
 	for (int i=0; i<byte_nb;i++)
-	{
-		std::cout<<"|"<<std::dec<<std::setw(20) << std::right << memory[sp-i]<<"|"<<std::endl;
-		std::cout<<"---------------------"<<std::endl;
+	{//std::setw(20) << std::right<<
+		std::cout<<"|"<<"  0x"<<std::setw(2) << std::right<< std::hex << (int)memory[sp+i]<<"  |"<<std::endl;
+		std::cout<<"----------"<<std::endl;
 	}
-		std::cout<<"|                   | "<<std::endl;
+		std::cout<<"|        | "<<std::endl;
 }
 
 
@@ -127,6 +128,16 @@ void Cpu::emulate(){
         case 0xEF : ob=1; call(0x28,ob); break;
         case 0xF7 : ob=1; call(0x30,ob); break;
         case 0xFF : ob=1; call(0x38,ob); break;
+
+        //return
+        case 0xC9 : ob=1; ret(); break; 
+
+        case 0xC0 : ob=1; ret(!flag.z); break; 
+        case 0xC8 : ob=1; ret( flag.z); break;  
+        case 0xD0 : ob=1; ret(!flag.c); break;  
+        case 0xD8 : ob=1; ret( flag.c); break;
+
+        case 0xD9 : ob=1; ret(); break; //Todo enable interrupts
 
         // //returns
         // case 0xC9 : opbytes = print_cmd("RET"); break;
@@ -203,5 +214,7 @@ void Cpu::call(const uint16_t addr, const int opbytes, const bool dojump){
 }
 
 void Cpu::ret(const bool dojump){
-	pc = pop();
+	if (dojump){
+		pc = pop();
+	}
 }

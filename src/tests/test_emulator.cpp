@@ -38,10 +38,34 @@ void test_jump(){
 	cpu.load_debug_cartridge("cd 10");
 	cpu.print_mem(0x00,5);
 	cpu.emulate();
+	cpu.print_stack(3);	
 	t.test_assert(cpu.get_pc(), 0x10 ,__LINE__);
 	t.test_assert(cpu.get_sp(), SP0-2 ,__LINE__);
 	t.test_assert(cpu.get_stack(0), 0x0 ,__LINE__);
 	t.test_assert(cpu.get_stack(1), 0x3 ,__LINE__);
+
+	//restart
+	cpu.load_debug_cartridge("cf");
+	cpu.emulate();
+	t.test_assert(cpu.get_pc(), 0x08 ,__LINE__);
+	t.test_assert(cpu.get_stack(0), 0x0 ,__LINE__);
+	t.test_assert(cpu.get_stack(1), 0x1 ,__LINE__);
+
+	//return
+	cpu.load_debug_cartridge("c3 02 01 cd 10 c9");
+	cpu.emulate();
+	cpu.print_stack(4);	
+	t.test_assert(cpu.get_pc(), 0x0102 ,__LINE__);
+	t.test_assert(cpu.get_stack(0), 0x0 ,__LINE__);
+	t.test_assert(cpu.get_stack(1), 0x0 ,__LINE__);
+
+	cpu.load_debug_cartridge("c3 02 01 cd 10 cd 10 c9");
+	cpu.emulate();
+	cpu.print_stack(4);	
+	t.test_assert(cpu.get_pc(), 0x010c ,__LINE__);
+	t.test_assert(cpu.get_stack(0), 0x2 ,__LINE__);
+	t.test_assert(cpu.get_stack(1), 0x1 ,__LINE__);
+
 
 	t.result();
 }

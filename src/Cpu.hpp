@@ -79,7 +79,7 @@ class Cpu {
 		int get_pc() const { return this->pc;}
 		int get_sp() const { return this->sp;}
 		int get_mem(const uint8_t addr) const { return memory[sp];}
-		int get_stack(int offset=0) const {return memory[sp-offset];}	
+		int get_stack(int offset=0) const {return (int)memory[sp+offset];}	
 		void print_pc() const {std::cout<<"Program counter: "<<pc<<std::endl;}
 		void print_sp() const{std::cout<<"Stack pointer:: "<<sp<<std::endl;}
 		void print_stack(int offset=1) const ;
