@@ -83,15 +83,8 @@ void Cpu::emulate(){
 
     //std::cout<<"I'm emulating'"<<std::endl;
 
-	 switch(opcode()){
-               
- //        //LDaaa"C", *(it+1)); break; 
- //        case 0x16 : opbytes = print_cmd("LD", "D", *(it+1)); break; 
- //        case 0x1E : opbytes = print_cmd("LD", "E", *(it+1)); break; 
- //        case 0x26 : opbytes = print_cmd("LD", "H", *(it+1)); break; 
- //        case 0x2E : opbytes = print_cmd("LD", "L", *(it+1)); break; 
- //        case 0x3E : opbytes = print_cmd("LD", "A", *(it+1)); break;
- //        case 0x36 : opbytes = print_cmd("LD", "(HL)", *(it+1));break;
+	 switch(opcode()){              
+
 		case 0x00 : ob = 1; break;
 
 		//jump
@@ -102,7 +95,7 @@ void Cpu::emulate(){
         case 0xD2 : jump(nn(), !flag.c); ob=3; break;
         case 0xDA : jump(nn(),  flag.c); ob=3; break;
 
-        case 0xE9 : jump(hl()); ob=1; break;
+        case 0xE9 : jump(get_hl()); ob=1; break;
 
         case 0x18 : jump(pc+op1()); ob=2; break;
 
@@ -139,18 +132,110 @@ void Cpu::emulate(){
 
         case 0xD9 : ob=1; ret(); break; //Todo enable interrupts
 
-        // //returns
-        // case 0xC9 : opbytes = print_cmd("RET"); break;
+        //8-bit Load
+        case 0x16 : ob=2; d=op1(); break; 
+        case 0x1E : ob=2; e=op1(); break; 
+        case 0x26 : ob=2; h=op1(); break; 
+        case 0x2E : ob=2; l=op1(); break; 
+        case 0x3E : ob=2; a=op1(); break;
+        case 0x36 : ob=2; set_hl_ind(op1());break;
+               
+        case 0x78 : ob=1; a=b ; break;
+        case 0x79 : ob=1; a=c ; break;
+        case 0x7A : ob=1; a=d ; break;
+        case 0x7B : ob=1; a=e ; break;
+        case 0x7C : ob=1; a=h ; break;
+        case 0x7D : ob=1; a=l ; break;
 
-        // case 0xC0 : opbytes = print_cmd("RET","NZ"); break; 
-        // case 0xC8 : opbytes = print_cmd("RET","Z"); break;  
-        // case 0xD0 : opbytes = print_cmd("RET","NC"); break;  
-        // case 0xD8 : opbytes = print_cmd("RET","C"); break;
+        case 0x7F : ob=1; a=a ; break;
+        case 0x40 : ob=1; b=b ; break;
+        case 0x41 : ob=1; b=c ; break;
+        case 0x42 : ob=1; b=d ; break;
+        case 0x43 : ob=1; b=e ; break;
+        case 0x44 : ob=1; b=h ; break;
+        case 0x45 : ob=1; b=l ; break;
 
-        // case 0xD9 : opbytes = print_cmd("RETI"); break;
+        case 0x47 : ob=1; b=a ; break;
+        case 0x48 : ob=1; c=b ; break;
+        case 0x49 : ob=1; c=c ; break;
+        case 0x4A : ob=1; c=d ; break;
+        case 0x4B : ob=1; c=e ; break;
+        case 0x4C : ob=1; c=h ; break;
+        case 0x4D : ob=1; c=l ; break;
+
+        case 0x4F : ob=1; c=a ; break;
+        case 0x50 : ob=1; d=b ; break;
+        case 0x51 : ob=1; d=c ; break;
+        case 0x52 : ob=1; d=d ; break;
+        case 0x53 : ob=1; d=e ; break;
+        case 0x54 : ob=1; d=h ; break;
+        case 0x55 : ob=1; d=l ; break;
+
+        case 0x57 : ob=1; d=a ; break;
+        case 0x58 : ob=1; e=b ; break;
+        case 0x59 : ob=1; e=c ; break;
+        case 0x5A : ob=1; e=d ; break;
+        case 0x5B : ob=1; e=e ; break;
+        case 0x5C : ob=1; e=h ; break;
+        case 0x5D : ob=1; e=l ; break;
+
+        case 0x5F : ob=1; e=a ; break;
+        case 0x60 : ob=1; h=b ; break;
+        case 0x61 : ob=1; h=c ; break;
+        case 0x62 : ob=1; h=d ; break;
+        case 0x63 : ob=1; h=e ; break;
+        case 0x64 : ob=1; h=h ; break;
+        case 0x65 : ob=1; h=l ; break;
+
+        case 0x67 : ob=1; h=a ; break;
+        case 0x68 : ob=1; l=b ; break;
+        case 0x69 : ob=1; l=c ; break;
+        case 0x6A : ob=1; l=d ; break;
+        case 0x6B : ob=1; l=e ; break;
+        case 0x6C : ob=1; l=h ; break;
+        case 0x6D : ob=1; l=l ; break;
         
+        case 0x6F : ob=1; l=a ; break;
 
- //        case 0xff : 
+        case 0x7E : ob=1; a=get_hl_ind(); break;
+		case 0x46 : ob=1; b=get_hl_ind(); break;
+		case 0x4E : ob=1; c=get_hl_ind(); break;
+		case 0x56 : ob=1; d=get_hl_ind(); break;
+		case 0x5E : ob=1; e=get_hl_ind(); break;
+		case 0x66 : ob=1; h=get_hl_ind(); break;
+		case 0x6E : ob=1; l=get_hl_ind(); break;
+
+		case 0x77 : ob=1; set_hl_ind(a); break;
+        case 0x70 : ob=1; set_hl_ind(b); break;
+        case 0x71 : ob=1; set_hl_ind(c); break;
+        case 0x72 : ob=1; set_hl_ind(d); break;
+        case 0x73 : ob=1; set_hl_ind(e); break;
+        case 0x74 : ob=1; set_hl_ind(h); break;
+        case 0x75 : ob=1; set_hl_ind(l); break;
+        
+        case 0x0A : ob=1; a=get_bc_ind(); break;
+        case 0x1A : ob=1; a=get_de_ind(); break;
+
+        case 0x02 : ob=1; set_bc_ind(a); break;
+        case 0x12 : ob=1; set_de_ind(a); break;
+
+        case 0xEA : ob=3; set_nn_ind(a); break;//LD (nn),A
+        case 0xFA : ob=3; a=get_nn_ind(); break;//LD A,(nn)
+
+        case 0xE2 : ob=1; a=memory[0xFF00+c]; break;
+        case 0xF2 : ob=1; memory[0xFF00+c]=a; break;
+
+        case 0x3a : ob=1; a=get_hl_ind(); decrement_hl(); break; //LD A,(HLD)
+        case 0x32 : ob=1; set_hl_ind(a); decrement_hl(); break; // LD (HLD),A
+    
+        case 0x2a : ob=1; a=get_hl_ind(); increment_hl(); break;// LD A,(HLI)
+        case 0x22 : ob=1; set_hl_ind(a); increment_hl(); break; // LD (HLI),A
+
+        case 0xE0 : ob=2; memory[0xFF00+op1()]=a; break; //LD (n) A
+        case 0xF0 : ob=2; a=memory[0xFF00+op1()]; break;
+
+        
+ //        ase 0xff : 
  //            std::cout<<"RST ";
  //            add1 = *(it+1) + (*(it+2)<<4); // Less significan byte first
  //            std::cout<<"$38"<<std::endl; //TODO What is $38, the value of a register?

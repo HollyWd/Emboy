@@ -34,6 +34,7 @@ void test_jump(){
 	cpu.emulate();
 	t.test_assert(cpu.get_pc(), 0x0a ,__LINE__);
 
+
 	//call
 	cpu.load_debug_cartridge("cd 10");
 	cpu.print_mem(0x00,5);
@@ -66,6 +67,7 @@ void test_jump(){
 	t.test_assert(cpu.get_stack(0), 0x2 ,__LINE__);
 	t.test_assert(cpu.get_stack(1), 0x1 ,__LINE__);
 
+	//TODO Conditional jump (good behavior when not jumping?)
 
 	t.result();
 }

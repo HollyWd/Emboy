@@ -5,6 +5,8 @@ Here I am going to log what I learned and the blocking points of this developmen
 **Table of content**
 1. [Disassembling](#Disassembling)
 2. [Compilation](#Compilation)
+3. [Design] (##Design)
+
 
 ## Disassembling
 
@@ -60,13 +62,48 @@ I used an iterator at first but this cause me some troubles. Indeed, when I jump
 
 ## Compilation
 
-### g++
+First, I compiled my code using:
+
+    g++ -Wall -funsigned-char src/disassembler.cpp -o build/disassembler`
+
+With more dependancies, you need then:
+
+    g++ -Wall -funsigned-char src/Cpu.cpp src/Cpu.hpp -c -o build/Cpu.o 
+    g++ -Wall -funsigned-char src/emulator.cpp build/Cpu.o -o build/emulator 
+
+Which becomes complicated with a lot of targets (emulator, disasembler, test, etc...) hence the need for a makefile.
+
+### Compilation options
+
+ * `-Wall` : Makes g++ really picky on unclear code, wrong types or mistakes. This should be used when developping to prevent mistakes and invisible bugs.
+
+ * `-c` : Just create an object file, not an executable
+ * `-o` : Specify the output file name
+ * `-funsigned-char` : On my system, `char` is interpreted as `signed char` so I need to force the interpretation es `unsigned char` since I wand to work with bytes.
+
+### Debuging
+
+**gdb**
+
+**profiler**
 
 ### Makefile
 
+I wrote a Makefile which is quite self-explaining. 
+The main link I used was [this one](https://stackoverflow.com/questions/2481269/how-to-make-a-simple-c-makefile), which goes through different makefile levels of complexity.
+
+The key is to use variables, here are some internal variables to makefile: 
+
+|$@ 	|Target name								|
+|$< 	|First dependancy name				|
+|$^ 	|Dependancies list						|
+|$? 	|List of the dependancies more recent than the target|
+|$* 	|Name of the file without surfix			|
+
+
 ## Design
 
-**General design**
+### General design
 
 The memory will be represented by a vector to provide easy access.
 
@@ -84,6 +121,26 @@ We could increment the pc when calling nn() op1() etc... but then we would risk 
 
 Instead we set an opbytes number for each opcode and increment the pc only if pc has not been changed by the instruction executed.
 
+### Constants
+
+I finally got the need for constants, especialy for class methods. For example, in the following function:`inline uint16_t word(const uint8_t lb, const uint8_t hb){ return lb + (hb<<8);}`
+
+I just want to create a word from two bytes and don't want to risk that any of those bytes could be modified in the function. Here there is no risk since they are passed by value but it would be an issue if they were passed by reference, you get the idea.
+
+Another example: `void Cpu::print_mem(int start_index, int byte_nb) const;` 
+In the following fonction, I don't want the function to print the memory to be able to modify my cpu state. The const at the end ensures me of that which make a protection against mistakes.
+
+I think this project is a good way to understand how this is important because it is easy to understand that if a function modifies a tiny part of the Cpu at some time, while it is not supposed to, it will mess up the entire emulation and be a nightmare to debug.
+
+## Assembly code
+
+### Difference between (HL) and HL
+
+According to [this link](http://furrtek.free.fr/?a=gbasm), (HL) is the value stored at adress contained in HL. This is the **indirect adress mode**.
+
+### Interruption
+
+Some instruction enable "interruptions", I need to investigate this point....
 
 ## Documentation
 
