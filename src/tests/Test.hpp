@@ -20,11 +20,11 @@ class Test {
 	public:
 		Test(std::string test_name, std::string file_name, std::string func_name);
 		void test_assert(bool b,int line);
-		template <class T>
-		void test_assert(T actual_value, T expected_value, int line){
+		template <class T1, class T2>
+		void test_assert(T1 actual_value, T2 expected_value, int line){
 			bool value = actual_value==expected_value;
 			test_assert(value, line);
-			if (value==false) std::cout<<" 		Actual value: "<< actual_value << ",	Expected value: "<<expected_value<<std::endl;
+			if (value==false) std::cout<<" 		Actual value: "<< (int)actual_value << ",	Expected value: "<<(int)expected_value<<std::endl;
 		};
 		void result();
 

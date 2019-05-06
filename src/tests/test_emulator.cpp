@@ -72,7 +72,25 @@ void test_jump(){
 	t.result();
 }
 
+void test_load(){
+
+	Test t("load_function",__FILE__,__FUNCTION__);
+	Cpu cpu;
+
+	cpu.load_debug_cartridge("16 05");
+	cpu.emulate();
+	t.test_assert(cpu.get_d(), 5 ,__LINE__);
+
+	cpu.load_debug_cartridge("3e 11 26 0d 2e 0d 36 11");
+	cpu.emulate();
+	t.test_assert(cpu.get_a(), 17 ,__LINE__);
+	t.test_assert(cpu.get_h(), (int)0xD ,__LINE__);
+	t.test_assert(cpu.get_l(), (uint8_t)0xD ,__LINE__);
+	t.test_assert(cpu.get_mem(0xDD), (uint16_t)0x11 ,__LINE__);
+}
+
 int main(){
-	test_jump();
+	//test_jump();
+	test_load();
 	return 0;
 }

@@ -234,7 +234,30 @@ void Cpu::emulate(){
         case 0xE0 : ob=2; memory[0xFF00+op1()]=a; break; //LD (n) A
         case 0xF0 : ob=2; a=memory[0xFF00+op1()]; break;
 
-        
+        //16-bits Loads
+        case 0x01 : ob=3; set_bc(nn()); break;       
+        case 0x11 : ob=3; set_de(nn()); break;
+        case 0x21 : ob=3; set_hl(nn()); break;
+        case 0x31 : ob=3; set_sp(nn()); break;
+
+        case 0xF9 : ob=1; set_sp(get_hl()); break;
+
+        case 0xF8 : ob=2; set_hl(get_sp()+op1()); break;
+
+        case 0x08 : ob=3; memory[nn()]=memory[sp]; break;
+
+        //POP PUSH
+        case 0xF5 : ob = 1; push(get_af()); break;
+        case 0xC5 : ob = 1; push(get_bc()); break;
+        case 0xD5 : ob = 1; push(get_de()); break;
+        case 0xE5 : ob = 1; push(get_hl()); break;
+
+        case 0xF1 : ob = 1; set_af(pop()); break;
+        case 0xC1 : ob = 1; set_bc(pop()); break;
+        case 0xD1 : ob = 1; set_de(pop()); break;
+        case 0xE1 : ob = 1; set_hl(pop()); break;
+
+
  //        ase 0xff : 
  //            std::cout<<"RST ";
  //            add1 = *(it+1) + (*(it+2)<<4); // Less significan byte first

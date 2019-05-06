@@ -9,7 +9,7 @@ I chose C++ for this project to gain some experience with this language. This is
 I start with a simple program converting a binary game boy rom file into assembly code. Proportion of the instruction implemented:
 
 Disassembled instructions: 100%
-Emulated instructions: 23% (115/501)    Tested Instructions: 3% (16/501)
+Emulated instructions: 26% (129/501)    Tested Instructions: 3% (16/501)
 
 ## Compile and test
 The disassembler is working and can be compiled and test as following. 

@@ -41,10 +41,17 @@ class Cpu {
 
 
 		uint16_t get_hl() const {return word(l,h);}
-		void set_hl(uint16_t nn){h=((nn && 0xF0)<<8); l=(nn && 0x0F);}
-
 		uint16_t get_bc() const {return word(c,b);}
 		uint16_t get_de() const {return word(e,d);}
+		uint16_t get_af() const {return word(f,a);}
+
+		void set_hl(uint16_t nn){h=((nn && 0xF0)<<8); l=(nn && 0x0F);}
+		void set_af(uint16_t nn){a=((nn && 0xF0)<<8); f=(nn && 0x0F);}
+		void set_bc(uint16_t nn){b=((nn && 0xF0)<<8); c=(nn && 0x0F);}
+		void set_de(uint16_t nn){d=((nn && 0xF0)<<8); e=(nn && 0x0F);}
+		void set_sp(uint16_t nn){sp=nn;}
+
+
 
 		///Get the value stored at adress in HL (indirect adressing mode)
 		uint16_t get_hl_ind() const {return memory[get_hl()];}
@@ -109,6 +116,15 @@ class Cpu {
 		void print_pc() const {std::cout<<"Program counter: "<<pc<<std::endl;}
 		void print_sp() const{std::cout<<"Stack pointer:: "<<sp<<std::endl;}
 		void print_stack(int offset=1) const ;
+
+		uint8_t get_a() const{return a;}
+		uint8_t get_b() const{return b;}
+		uint8_t get_d() const{return d;}
+		uint8_t get_h() const{return h;}
+		uint8_t get_f() const{return f;}
+		uint8_t get_c() const{return c;}
+		uint8_t get_e() const{return e;}
+		uint8_t get_l() const{return l;}
 
 
 		//int getValue() const { return this->value; } 
