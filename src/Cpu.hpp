@@ -20,6 +20,13 @@ struct Flag{
 	bool n; //Substract flag
 	bool h; //Half Carry Flag
 	bool c; // Carry flag
+
+	void reset(){
+		z=false;
+		n=false;
+		h=false;
+		c=false;
+	};
 };
 
 /*! Class emulating a gameboy processor */
@@ -91,7 +98,7 @@ class Cpu {
 		///Store 8bit val at address Cpu::sp and decrement sp
 		void push(const uint8_t val);
 		///Store 16 bit val at address Cpu::sp and decrement sp twice
-		///The most significant byte is pushed first
+		///The less significant byte is pushed first
 		void push(const uint16_t val);
 		///Return the 16 bit value at sp and increment it twice.
 		/// the most significant bit is poped first
@@ -107,16 +114,13 @@ class Cpu {
 		///The opcode should be in minuscule with spaces between the words. Exp: 01 0a ff.
 		void load_debug_cartridge(std::string binary_string);
 		void emulate();
-		void print_mem(int start_index=-1, int byte_nb=1) const;
+		
 		std::vector<char>::const_iterator get_pc_iterator() const;
 		int get_pc() const { return this->pc;}
 		int get_sp() const { return this->sp;}
+		///Bool table displays the memory as a table if true, inline if false
 		int get_mem(const uint8_t addr) const { return memory[sp];}
 		int get_stack(int offset=0) const {return (int)memory[sp+offset];}	
-		void print_pc() const {std::cout<<"Program counter: "<<pc<<std::endl;}
-		void print_sp() const{std::cout<<"Stack pointer:: "<<sp<<std::endl;}
-		void print_stack(int offset=1) const ;
-
 		uint8_t get_a() const{return a;}
 		uint8_t get_b() const{return b;}
 		uint8_t get_d() const{return d;}
@@ -125,6 +129,11 @@ class Cpu {
 		uint8_t get_c() const{return c;}
 		uint8_t get_e() const{return e;}
 		uint8_t get_l() const{return l;}
+
+		void print_mem(int start_index=-1, int byte_nb=1, bool table=false) const;
+		void print_pc() const {std::cout<<"Program counter: "<<pc<<std::endl;}
+		void print_sp() const{std::cout<<"Stack pointer:: "<<sp<<std::endl;}
+		void print_stack(int offset=1) const ;
 
 
 		//int getValue() const { return this->value; } 

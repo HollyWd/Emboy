@@ -24,7 +24,7 @@ test_cpu : $(SRCDIR)/test_cpu.cpp $(BUILDDIR)/Cpu.o
 test_disassembler : $(SRCDIR)/test_disassembler.cpp $(BUILDDIR)/Disassembler.o
 	$(CC) $(CPPFLAGS) $^ -o $(BUILDDIR)/$@ 
 
-test_emulator : $(SRCDIR)/tests/test_emulator.cpp $(BUILDDIR)/Test.o $(BUILDDIR)/Cpu.o $(BUILDDIR)/utils.o 
+test_emulator : $(SRCDIR)/tests/test_emulator.cpp $(BUILDDIR)/Test.o $(BUILDDIR)/Cpu.o $(BUILDDIR)/Disassembler.o $(BUILDDIR)/utils.o 
 	$(CC) $(CPPFLAGS) ${INC}  $^ -o $(BUILDDIR)/$@ 
 
 ## Build object files	

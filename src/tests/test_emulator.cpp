@@ -10,6 +10,7 @@
 void test_jump(){
 
 	Test t("jump_function",__FILE__,__FUNCTION__);
+	Disassembler dis;
 
 	//Init
 	Cpu cpu;
@@ -53,19 +54,34 @@ void test_jump(){
 	t.test_assert(cpu.get_stack(1), 0x1 ,__LINE__);
 
 	//return
-	cpu.load_debug_cartridge("c3 02 01 cd 10 c9");
-	cpu.emulate();
+	//Jump 4
+	//Call 6
+	//Ret
+	cpu.load_debug_cartridge("c3 03 00 cd 06 00 c9");
 	cpu.print_stack(4);	
-	t.test_assert(cpu.get_pc(), 0x0102 ,__LINE__);
-	t.test_assert(cpu.get_stack(0), 0x0 ,__LINE__);
-	t.test_assert(cpu.get_stack(1), 0x0 ,__LINE__);
+	cpu.print_mem(0x00,10,true);
+	cpu.print_pc();
 
-	cpu.load_debug_cartridge("c3 02 01 cd 10 cd 10 c9");
-	cpu.emulate();
+	dis.disassemble_next_op(cpu.get_pc_iterator());
+	cpu.emulate(); //Jump 3
 	cpu.print_stack(4);	
-	t.test_assert(cpu.get_pc(), 0x010c ,__LINE__);
-	t.test_assert(cpu.get_stack(0), 0x2 ,__LINE__);
-	t.test_assert(cpu.get_stack(1), 0x1 ,__LINE__);
+	cpu.print_mem(0x00,10,true);
+	cpu.print_pc();
+	t.test_assert(cpu.get_pc(), 0x3 ,__LINE__);
+
+	dis.disassemble_next_op(cpu.get_pc_iterator());
+	cpu.emulate();//Call 10
+	t.test_assert(cpu.get_stack(0), 0x0 ,__LINE__);
+	t.test_assert(cpu.get_stack(1), 0x6 ,__LINE__);
+	t.test_assert(cpu.get_pc(), 0x6 ,__LINE__);
+
+
+	// cpu.load_debug_cartridge("c3 02 01 cd 10 cd 10 c9");
+	// cpu.emulate();
+	// cpu.print_stack(4);	
+	// t.test_assert(cpu.get_pc(), 0x010c ,__LINE__);
+	// t.test_assert(cpu.get_stack(0), 0x2 ,__LINE__);
+	// t.test_assert(cpu.get_stack(1), 0x1 ,__LINE__);
 
 	//TODO Conditional jump (good behavior when not jumping?)
 
@@ -81,16 +97,16 @@ void test_load(){
 	cpu.emulate();
 	t.test_assert(cpu.get_d(), 5 ,__LINE__);
 
-	cpu.load_debug_cartridge("3e 11 26 0d 2e 0d 36 11");
+	cpu.load_debug_cartridge("3e 11 26 0d 2e 0d"); //36 11
 	cpu.emulate();
-	t.test_assert(cpu.get_a(), 17 ,__LINE__);
-	t.test_assert(cpu.get_h(), (int)0xD ,__LINE__);
+	t.test_assert(cpu.get_a(), (uint8_t)17 ,__LINE__);
+	t.test_assert(cpu.get_h(), (uint8_t)0xD ,__LINE__);
 	t.test_assert(cpu.get_l(), (uint8_t)0xD ,__LINE__);
 	t.test_assert(cpu.get_mem(0xDD), (uint16_t)0x11 ,__LINE__);
 }
 
 int main(){
-	//test_jump();
-	test_load();
+	test_jump();
+	//test_load();
 	return 0;
 }

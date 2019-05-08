@@ -5,9 +5,18 @@ Cpu::Cpu(){
 }
 
 void Cpu::reset(){
-	this->pc=0x100;
-	this->sp=SP0;
-	this->memory = std::vector<char>(65536,0);	
+	pc=0x100;
+	sp=SP0;
+	memory = std::vector<char>(65536,0);	
+	a=0;
+	b=0;
+	d=0;
+	h=0;
+	f=0;
+	c=0;
+	e=0;
+	l=0;
+	flag.reset();
 }
 
 //TODO check that cartridge size < 32kB = 32768 octets
@@ -28,44 +37,71 @@ void Cpu::load_debug_cartridge(std::string string_binary_code){
 	this->pc=0x00;
 }
 
-void Cpu::print_mem(int start_index, int byte_nb) const{
+void Cpu::print_mem(int start_index, int byte_nb, bool table) const{
 
 	int end_index=start_index+byte_nb+1;
 
 	if(start_index==-1){
 		end_index=MEM_SIZE;
 	}
-	// else if(byte_nb==0){
-	// 	end_index=start_index+1;
-	// }
-	// for (int i=start_index; i<end_index; i++){
-	// 	std::cout<<std::hex<<std::setfill('0') << std::setw(4)<<i<<"    "<<(int)this->memory[i]<<std::endl;
-	// }
 
 	std::cout<<std::endl<<"Memory: "<<std::endl;
-	int i = start_index;
-	while (i<end_index){
-		printf("0x%04x:  ",i);
-		for(size_t j=0; j<8; j++){
-			if (i>end_index) break;
-			std::cout<<std::hex<<std::setfill('0') << std::setw(2)<<(int)this->memory[i]; i++;
-			if (i>end_index) break;
-			std::cout<<std::hex<<std::setfill('0') << std::setw(2)<<(int)this->memory[i]<<" "; i++;		
+
+	if(!table){
+		int i = start_index;
+		while (i<end_index){
+			printf("0x%04x:  ",i);
+			for(size_t j=0; j<8; j++){
+				if (i>end_index) break;
+				std::cout<<std::hex<<std::setfill('0') << std::setw(2)<<(int)this->memory[i]; i++;
+				if (i>end_index) break;
+				std::cout<<std::hex<<std::setfill('0') << std::setw(2)<<(int)this->memory[i]<<" "; i++;		
+			}
+			std::cout<<std::endl;		
+			//std::cout<<*(buffer+pc)<<std::endl;
 		}
-		std::cout<<std::endl;		
-		//std::cout<<*(buffer+pc)<<std::endl;
 	}
+
+	else{
+		const char * c1f = "      "; //col1 fill
+		const char * c2f1 = "----------"; //col2 fill 1
+		const char * c2f2 = "|        |"; //col2 fill 2
+		const char * gs = "\033[1;32m"; //green string
+		const char * gse = "\033[0m"; //end green string
+
+		int i = start_index;
+		if(i>0){std::cout<<c1f<<c2f2<<std::endl;}
+        std::cout<<c1f<<c2f1<<std::endl;
+		for (i= start_index; i<end_index;i++)
+		{			
+			if(i==pc){std::cout<<gs;}
+            std::cout<<std::setw(4) << std::right<< std::hex <<"0x"<< i<<" ";
+			std::cout<<"|"<<"  0x"<<std::setw(2) << std::right<< std::hex << (int)memory[i]<<"  |";
+			if(i==pc){ std::cout<<" <- Program counter"<<gse;}
+            std::cout<<std::endl<<c1f<<c2f1<<std::endl;
+		}
+			std::cout<<c1f<<c2f2<<std::endl<<std::endl;
+	}	
 }
 
 void Cpu::print_stack(int byte_nb) const{
+
+    const char * c1f1 = "----------"; //col1 fill 1
+    const char * c1f2 = "|        |"; //col1 fill 2
+    const char * bs = "\033[1;36m"; //blue string
+    const char * bse = "\033[0m"; //end blue string
+
 	std::cout<<std::endl<<"Stack: "<<std::endl;
-	std::cout<<"----------"<<std::endl;
+	std::cout<<c1f1<<std::endl;
 	for (int i=0; i<byte_nb;i++)
 	{//std::setw(20) << std::right<<
-		std::cout<<"|"<<"  0x"<<std::setw(2) << std::right<< std::hex << (int)memory[sp+i]<<"  |"<<std::endl;
-		std::cout<<"----------"<<std::endl;
+		if(i==0){std::cout<<bs;}
+		std::cout<<"|"<<"  0x"<<std::setw(2) << std::right<< std::hex << (int)memory[sp+i]<<"  |";
+		if(i==0){std::cout<<" <- Stack Pointer"<<bse;}
+        std::cout<<std::endl<<c1f1<<std::endl;
+
 	}
-		std::cout<<"|        | "<<std::endl;
+		std::cout<<c1f2<<std::endl;
 }
 
 
@@ -301,7 +337,7 @@ void Cpu::push(const uint8_t val){
 
 void Cpu::push(const uint16_t val){
 	decrement_sp();
-	memory[sp]=val;
+	memory[sp]=val & 0x00ff;
 	decrement_sp();
 	memory[sp]=val<<8;
 }
