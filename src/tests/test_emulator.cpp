@@ -92,21 +92,33 @@ void test_load(){
 
 	Test t("load_function",__FILE__,__FUNCTION__);
 	Cpu cpu;
+	Disassembler dis;
 
 	cpu.load_debug_cartridge("16 05");
 	cpu.emulate();
 	t.test_assert(cpu.get_d(), 5 ,__LINE__);
 
-	cpu.load_debug_cartridge("3e 11 26 0d 2e 0d"); //36 11
+	cpu.load_debug_cartridge("3e 11 26 01 2e 02 36 11"); //36 11
+	dis.disassemble_next_op(cpu.get_pc_iterator());
 	cpu.emulate();
 	t.test_assert(cpu.get_a(), (uint8_t)17 ,__LINE__);
-	t.test_assert(cpu.get_h(), (uint8_t)0xD ,__LINE__);
-	t.test_assert(cpu.get_l(), (uint8_t)0xD ,__LINE__);
-	t.test_assert(cpu.get_mem(0xDD), (uint16_t)0x11 ,__LINE__);
+	dis.disassemble_next_op(cpu.get_pc_iterator());
+	cpu.emulate();
+	t.test_assert(cpu.get_h(), (uint8_t)0x1 ,__LINE__);
+	dis.disassemble_next_op(cpu.get_pc_iterator());
+	cpu.emulate();
+	t.test_assert(cpu.get_l(), (uint8_t)0x2 ,__LINE__);
+	dis.disassemble_next_op(cpu.get_pc_iterator());
+
+	cpu.emulate();
+	cpu.print_reg();
+	cpu.print_mem(0x0102,4,true);
+	t.test_assert(cpu.get_mem(cpu.get_hl()), (uint16_t)0x0102 ,__LINE__);
+	t.test_assert(cpu.get_mem(0x0102), (uint8_t)0x11 ,__LINE__);
 }
 
 int main(){
-	test_jump();
-	//test_load();
+	//test_jump();
+	test_load();
 	return 0;
 }

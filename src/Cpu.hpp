@@ -47,10 +47,7 @@ class Cpu {
 		Flag flag;///<Processor flag
 
 
-		uint16_t get_hl() const {return word(l,h);}
-		uint16_t get_bc() const {return word(c,b);}
-		uint16_t get_de() const {return word(e,d);}
-		uint16_t get_af() const {return word(f,a);}
+
 
 		void set_hl(uint16_t nn){h=((nn && 0xF0)<<8); l=(nn && 0x0F);}
 		void set_af(uint16_t nn){a=((nn && 0xF0)<<8); f=(nn && 0x0F);}
@@ -58,14 +55,14 @@ class Cpu {
 		void set_de(uint16_t nn){d=((nn && 0xF0)<<8); e=(nn && 0x0F);}
 		void set_sp(uint16_t nn){sp=nn;}
 
-
+		char & hl_ind(){return memory[get_hl()];} //
 
 		///Get the value stored at adress in HL (indirect adressing mode)
-		uint16_t get_hl_ind() const {return memory[get_hl()];}
+		uint8_t get_hl_ind() const {return memory[get_hl()];}
 		///Get the value stored at adress in BC (indirect adressing mode)
-		uint16_t get_bc_ind() const {return memory[get_bc()];}
+		uint8_t get_bc_ind() const {return memory[get_bc()];}
 		///Get the value stored at adress in DE (indirect adressing mode)
-		uint16_t get_de_ind() const {return memory[get_de()];}		
+		uint8_t get_de_ind() const {return memory[get_de()];}		
 
 		///Set the value stored at adress in HL (indirect adressing mode)
 		void set_hl_ind(uint8_t n) {memory[get_hl()] = n;}
@@ -105,6 +102,11 @@ class Cpu {
 		uint16_t pop();
 		void call(const uint16_t addr, int op, const bool dojump=true);
 		void ret(const bool dojump=true);
+		void bit(const uint8_t b, const uint8_t n);
+		void set(const uint8_t b, uint8_t & n){ n = n | 1<<b;}
+		void set(const uint8_t b, char & n){ n = n | 1<<b;}
+		void res(const uint8_t b, uint8_t & n){n = n &  ~(1<<b);}
+		void res(const uint8_t b, char & n){n = n &  ~(1<<b);}
 
 	public :
 		Cpu();
@@ -116,11 +118,11 @@ class Cpu {
 		void emulate();
 		
 		std::vector<char>::const_iterator get_pc_iterator() const;
-		int get_pc() const { return this->pc;}
-		int get_sp() const { return this->sp;}
+		uint16_t get_pc() const { return this->pc;}
+		uint16_t get_sp() const { return this->sp;}
 		///Bool table displays the memory as a table if true, inline if false
-		int get_mem(const uint8_t addr) const { return memory[sp];}
-		int get_stack(int offset=0) const {return (int)memory[sp+offset];}	
+		uint8_t get_mem(const uint16_t addr) const { return memory[sp];}
+		uint8_t get_stack(int offset=0) const {return (int)memory[sp+offset];}	
 		uint8_t get_a() const{return a;}
 		uint8_t get_b() const{return b;}
 		uint8_t get_d() const{return d;}
@@ -130,10 +132,16 @@ class Cpu {
 		uint8_t get_e() const{return e;}
 		uint8_t get_l() const{return l;}
 
+		uint16_t get_hl() const {return word(l,h);}
+		uint16_t get_bc() const {return word(c,b);}
+		uint16_t get_de() const {return word(e,d);}
+		uint16_t get_af() const {return word(f,a);}
+
 		void print_mem(int start_index=-1, int byte_nb=1, bool table=false) const;
 		void print_pc() const {std::cout<<"Program counter: "<<pc<<std::endl;}
 		void print_sp() const{std::cout<<"Stack pointer:: "<<sp<<std::endl;}
 		void print_stack(int offset=1) const ;
+		void print_reg() const;
 
 
 		//int getValue() const { return this->value; } 

@@ -109,6 +109,22 @@ std::vector<char>::const_iterator Cpu::get_pc_iterator() const{
 	return this->memory.begin() + this->pc;
 }
 
+void Cpu::print_reg() const{
+    std::cout<<std::endl<<"Registers: "<<std::endl;
+    std::cout<<std::setfill('0');
+    std::cout<<"A : "<<"  0x"<<std::setw(2) << std::right<< std::hex << (int)a<<"    ";
+    std::cout<<"F : "<<"  0x"<<std::setw(2) << std::right<< std::hex << (int)f<<std::endl;
+    std::cout<<"B : "<<"  0x"<<std::setw(2) << std::right<< std::hex << (int)b<<"    ";
+    std::cout<<"C : "<<"  0x"<<std::setw(2) << std::right<< std::hex << (int)c<<std::endl;
+    std::cout<<"D : "<<"  0x"<<std::setw(2) << std::right<< std::hex << (int)d<<"    ";
+    std::cout<<"E : "<<"  0x"<<std::setw(2) << std::right<< std::hex << (int)e<<std::endl;
+    std::cout<<"H : "<<"  0x"<<std::setw(2) << std::right<< std::hex << (int)h<<"    ";
+    std::cout<<"L : "<<"  0x"<<std::setw(2) << std::right<< std::hex << (int)l<<std::endl;
+    std::cout<<"    SP : "<<"  0x"<<std::setw(2) << std::hex << (int)sp<<std::endl;
+    std::cout<<"    PC : "<<"  0x"<<std::setw(2) << std::hex << (int)pc<<std::endl;
+        
+}
+
 
 void Cpu::emulate(){
 
@@ -293,6 +309,39 @@ void Cpu::emulate(){
         case 0xD1 : ob = 1; set_de(pop()); break;
         case 0xE1 : ob = 1; set_hl(pop()); break;
 
+        //Bit opcodes
+        case 0xCB :{
+            ob=2;
+            switch (op1()){
+                case 0x47 : ob=3; bit(op2(),a); break;
+                case 0x40 : ob=3; bit(op2(),b); break;
+                case 0x41 : ob=3; bit(op2(),c); break;
+                case 0x42 : ob=3; bit(op2(),d); break;
+                case 0x43 : ob=3; bit(op2(),e); break;
+                case 0x44 : ob=3; bit(op2(),h); break;
+                case 0x45 : ob=3; bit(op2(),l); break;
+                case 0x46 : ob=3; bit(op2(), get_hl_ind()); break;
+
+                case 0xC7 : ob=3; set(op2(),a); break;
+                case 0xC0 : ob=3; set(op2(),b); break;
+                case 0xC1 : ob=3; set(op2(),c); break;
+                case 0xC2 : ob=3; set(op2(),d); break;
+                case 0xC3 : ob=3; set(op2(),e); break;
+                case 0xC4 : ob=3; set(op2(),h); break;
+                case 0xC5 : ob=3; set(op2(),l); break;
+                case 0xC6 : ob=3; set(op2(), hl_ind()); break;
+
+                case 0x87 : ob=3; res(op2(),a); break;
+                case 0x80 : ob=3; res(op2(),b); break;
+                case 0x81 : ob=3; res(op2(),c); break;
+                case 0x82 : ob=3; res(op2(),d); break;
+                case 0x83 : ob=3; res(op2(),e); break;
+                case 0x84 : ob=3; res(op2(),h); break;
+                case 0x85 : ob=3; res(op2(),l); break;
+                case 0x86 : ob=3; res(op2(), hl_ind()); break;
+            }
+        }
+
 
  //        ase 0xff : 
  //            std::cout<<"RST ";
@@ -361,4 +410,11 @@ void Cpu::ret(const bool dojump){
 	if (dojump){
 		pc = pop();
 	}
+}
+
+void Cpu::bit(const uint8_t b, const uint8_t n){
+    assert((b>=0) || (b<=7));
+    flag.z=n&1<<b;
+    flag.n=0;
+    flag.h=1;
 }
