@@ -113,8 +113,9 @@ void test_load(){
 	cpu.emulate();
 	cpu.print_reg();
 	cpu.print_mem(0x0102,4,true);
-	t.test_assert(cpu.get_mem(cpu.get_hl()), (uint16_t)0x0102 ,__LINE__);
+	t.test_assert(cpu.get_hl(), (uint16_t)0x0102 ,__LINE__);
 	t.test_assert(cpu.get_mem(0x0102), (uint8_t)0x11 ,__LINE__);
+	t.result();
 }
 
 int main(){

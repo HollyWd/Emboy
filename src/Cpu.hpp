@@ -9,7 +9,7 @@
 
 const int MEM_SIZE = 0x10000;
 const int CARTRIDGE_SIZE = 0x8000;
-const int SP0 = 0xE000;
+const int SP0 = 0xFFFE;
 const int SPMAX = 0xDFFF;
 const int SPMIN = 0xC000;
 
@@ -46,7 +46,8 @@ class Cpu {
 		uint16_t pc;///<Program counter
 		Flag flag;///<Processor flag
 
-
+		void nullset();
+		void reset();/// set all Cpu values to zero
 
 
 		void set_hl(uint16_t nn){h=((nn && 0xF0)<<8); l=(nn && 0x0F);}
@@ -110,7 +111,7 @@ class Cpu {
 
 	public :
 		Cpu();
-		void reset();
+
 		void load_cartridge(std::vector<char> cartridge);
 		void print_cartridge_info();
 		///Load the string code in memory at PC. 
@@ -122,7 +123,7 @@ class Cpu {
 		uint16_t get_pc() const { return this->pc;}
 		uint16_t get_sp() const { return this->sp;}
 		///Bool table displays the memory as a table if true, inline if false
-		uint8_t get_mem(const uint16_t addr) const { return memory[sp];}
+		uint8_t get_mem(const uint16_t addr) const { return memory[addr];}
 		uint8_t get_stack(int offset=0) const {return (int)memory[sp+offset];}	
 		uint8_t get_a() const{return a;}
 		uint8_t get_b() const{return b;}
