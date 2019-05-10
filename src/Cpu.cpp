@@ -30,6 +30,96 @@ void Cpu::load_cartridge(std::vector<char> cartridge){
 	std::copy(cartridge.begin(), cart_end, this->memory.begin());
 }
 
+void Cpu::print_cartridge_info(){
+    std::string title(memory.begin()+0x134, memory.begin()+0x145);
+    std::cout<<"Title: "<<title<<std::endl;    
+
+    if (memory[0x143]==0x80){
+        std::cout<<"Color Game Boy "<<std::endl;
+    }
+    else{
+        std::cout<<"Not Color Game Boy "<<std::endl;
+    }
+
+    std::cout<<"License code (new): "<<std::hex<<word(memory[145], memory[144])<<std::endl;
+
+    switch(memory[0x146]){
+        case 00: std::cout<<"Game Boy functions "<<std::endl; break;
+        case 03: std::cout<<"Super Game Boy functions"<<std::endl; break;
+    }
+
+    std::string cart_type;
+    switch(memory[0x147])
+    { 
+        case 0x0 : cart_type="ROM ONLY"; break;
+        case 0x1 : cart_type="ROM+MBC1"; break;
+        case 0x2 : cart_type="ROM+MBC1+RAM"; break;
+        case 0x3 : cart_type="ROM+MBC1+RAM+BATT"; break;
+        case 0x5 : cart_type="ROM+MBC2 "; break;
+        case 0x6 : cart_type="ROM+MBC2+BATTERY "; break;
+        case 0x8 : cart_type="ROM+RAM"; break;
+        case 0x9 : cart_type="ROM+RAM+BATTERY"; break;
+        case 0xB : cart_type="ROM+MMM01"; break;
+        case 0xC : cart_type="ROM+MMM01+SRAM "; break;
+        case 0xD : cart_type="ROM+MMM01+SRAM+BATT"; break;
+        case 0xF : cart_type="ROM+MBC3+TIMER+BATT"; break;
+        case 0x10 : cart_type="ROM+MBC3+TIMER+RAM+BATT"; break;
+        case 0x11 : cart_type="ROM+MBC3"; break;
+        case 0x12: cart_type="ROM+MBC3+RAM"; break;
+        case 0x13: cart_type="ROM+MBC3+RAM+BATT"; break;
+        case 0x19: cart_type="ROM+MBC5"; break;
+        case 0x1A: cart_type="ROM+MBC5+RAM"; break;
+        case 0x1B: cart_type="ROM+MBC5+RAM+BATT"; break;
+        case 0x1C: cart_type="ROM+MBC5+RUMBLE"; break;
+        case 0x1D: cart_type="ROM+MBC5+RUMBLE+SRAM"; break;
+        case 0x1E: cart_type="ROM+MBC5+RUMBLE+SRAM+BATT"; break;
+        case 0x1F: cart_type="Pocket Camera"; break;
+        case 0xFD: cart_type="Bandai TAMA5"; break;
+        case 0xFE: cart_type="Hudson HuC-3"; break;
+        case 0xFF: cart_type="Hudson HuC-1"; break;
+    }
+    std::cout<<"Cartridge type: "<<cart_type<<std::endl; 
+
+    std::string rom_size;
+    switch(memory[0x148]){
+         case 0 : rom_size = " 256Kbit =  32KByte =   2 banks"    ;break;        
+         case 1 : rom_size = " 512Kbit =  64KByte =   4 banks"    ;break;        
+         case 2 : rom_size = "   1Mbit = 128KByte =   8 banks"    ;break;        
+         case 3 : rom_size = "   2Mbit = 256KByte =  16 banks"    ;break;        
+         case 4 : rom_size = "   4Mbit = 512KByte =  32 banks"    ;break;        
+         case 5 : rom_size = "   8Mbit =   1MByte =  64 banks"    ;break;        
+         case 6 : rom_size = "  16Mbit =   2MByte = 128 banks"    ;break;      
+         case 0x52: rom_size = "   9Mbit = 1.1MByte =  72 banks"  ;break;        
+         case 0x53: rom_size = "  10Mbit = 1.2MByte =  80 banks"  ;break;        
+         case 0x54: rom_size = "  1.5MByte =  96 banks"           ;break;  
+    }
+    std::cout<<"ROM size: "<<rom_size<<std::endl; 
+
+    std::string ram_size;
+    switch(memory[0x149]){
+         case 0 : ram_size = "None" ; break;         
+         case 1 : ram_size = " 16kBit =  2kB = 1 bank " ; break;             
+         case 2 : ram_size = " 64kBit =  8kB = 1 bank " ; break;             
+         case 3 : ram_size = "256kBit = 32kB = 4 banks" ; break;             
+         case 4 : ram_size = "  1MBit =128kB =16 banks" ; break;  
+    }
+    std::cout<<"RAM size: "<<ram_size<<std::endl; 
+
+    switch(memory[0x14A]){
+         case 0 : std::cout<<"Destination: Japanese"<<std::endl;  break;             
+         case 1 : std::cout<<"Destination: Non-Japanese"<<std::endl;  break;  
+    }
+
+    std::cout<<"License code (old): ";
+    switch(memory[0x14B]){
+         case 0x33 : std::cout<<"See old license code"<<std::endl;  break;             
+         case 0x79 : std::cout<<"Accolade"<<std::endl;  break;  
+         case 0xA4 : std::cout<<"Konami"<<std::endl;  break; 
+         default : std::cout<<"?"<<std::endl;  
+    }
+
+}
+
 void Cpu::load_debug_cartridge(std::string string_binary_code){
 	this->reset();
 	std::vector<char> debug_cartridge = utils::string_to_byte_vector(string_binary_code);

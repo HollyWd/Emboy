@@ -7,8 +7,8 @@
 #include <cassert>
 #include "utils.hpp"
 
-const int MEM_SIZE = 65536;
-const int CARTRIDGE_SIZE = 32768;
+const int MEM_SIZE = 0x10000;
+const int CARTRIDGE_SIZE = 0x8000;
 const int SP0 = 0xE000;
 const int SPMAX = 0xDFFF;
 const int SPMIN = 0xC000;
@@ -112,6 +112,7 @@ class Cpu {
 		Cpu();
 		void reset();
 		void load_cartridge(std::vector<char> cartridge);
+		void print_cartridge_info();
 		///Load the string code in memory at PC. 
 		///The opcode should be in minuscule with spaces between the words. Exp: 01 0a ff.
 		void load_debug_cartridge(std::string binary_string);

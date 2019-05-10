@@ -18,7 +18,9 @@ int main(int argc, char* argv[]){
 
 	//Load cartidge into CPU memory
 	cpu.load_cartridge(char_vect);
-	std::cout << "Cartridge loaded!"<<std::endl;
+	std::cout << "Cartridge loaded!"<<std::endl<<std::endl;
+
+	cpu.print_cartridge_info();
 	//cpu.print_mem(0x100, 2);
 
 	//Emulate and debug
