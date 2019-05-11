@@ -44,10 +44,11 @@ int main(int argc, char* argv[]){
 		if (cmd=="e") cpu.emulate(); //emulate next operation
 		else if (cmd=="d") dis.disassemble_next_op(cpu.get_pc_iterator()); //disassemble next operation
 		//case "mem" : cpu.print_mem(cpu.get_pc(), 4); break; //print memory
-		else if (cmd=="pc") cpu.print_pc();
-		else if (cmd=="*pc") cpu.print_mem(cpu.get_pc(), 4);
-		else if (cmd=="sp") cpu.print_sp();
-		else if (cmd=="*sp") cpu.print_stack(0);
+		else if (cmd=="mem") cpu.print_mem(cpu.get_pc(), 5, true);
+		//else if (cmd=="*pc") cpu.print_mem(cpu.get_pc(), 4);
+		else if (cmd=="stack" || cmd=="st") cpu.print_stack(5);
+		else if (cmd=="reg" || cmd=="r") cpu.print_reg();
+		else if (cmd=="flag" || cmd=="f") cpu.print_flag();
 		else { //(cmd=="s") //verbose display
 			cpu.print_mem(cpu.get_pc(), 4);
 			dis.disassemble_next_op(cpu.get_pc_iterator()); 

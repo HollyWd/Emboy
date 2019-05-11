@@ -118,6 +118,16 @@ void test_load(){
 	t.result();
 }
 
+void test_bit(){
+
+	// Test t("bit_function",__FILE__,__FUNCTION__);
+	// Cpu cpu;
+	// Disassembler dis;
+
+	// cpu.load_debug_cartridge("3e 11 cb 47 01");
+
+	// t.result();
+
 int main(){
 	//test_jump();
 	test_load();

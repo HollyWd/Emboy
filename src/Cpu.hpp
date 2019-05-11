@@ -49,12 +49,11 @@ class Cpu {
 		void nullset();
 		void reset();/// set all Cpu values to zero
 
-
-		void set_hl(uint16_t nn){h=((nn && 0xF0)<<8); l=(nn && 0x0F);}
-		void set_af(uint16_t nn){a=((nn && 0xF0)<<8); f=(nn && 0x0F);}
-		void set_bc(uint16_t nn){b=((nn && 0xF0)<<8); c=(nn && 0x0F);}
-		void set_de(uint16_t nn){d=((nn && 0xF0)<<8); e=(nn && 0x0F);}
-		void set_sp(uint16_t nn){sp=nn;}
+		void set_hl(const uint16_t nn){h=((nn & 0xFF00)<<8); l=(nn & 0x00FF);}
+		void set_af(const uint16_t nn){a=((nn & 0xFF00)<<8); f=(nn & 0x00FF);}
+		void set_bc(const uint16_t nn){b=((nn & 0xFF00)<<8); c=(nn & 0x00FF);}
+		void set_de(const uint16_t nn){d=((nn & 0xFF00)<<8); e=(nn & 0x00FF);}
+		void set_sp(const uint16_t nn){sp=nn;}
 
 		char & hl_ind(){return memory[get_hl()];} //
 
@@ -103,11 +102,23 @@ class Cpu {
 		uint16_t pop();
 		void call(const uint16_t addr, int op, const bool dojump=true);
 		void ret(const bool dojump=true);
+
 		void bit(const uint8_t b, const uint8_t n);
-		void set(const uint8_t b, uint8_t & n){ n = n | 1<<b;}
-		void set(const uint8_t b, char & n){ n = n | 1<<b;}
-		void res(const uint8_t b, uint8_t & n){n = n &  ~(1<<b);}
-		void res(const uint8_t b, char & n){n = n &  ~(1<<b);}
+
+		template<class T> void set(const uint8_t b, T & n){ n = n | 1<<b;}
+		template<class T> void res(const uint8_t b, T & n){n = n &  ~(1<<b);}
+
+		void add_8(uint8_t & dest, const uint8_t val);
+		void add_8_c(uint8_t & dest, const uint8_t val);
+		void sub_8(uint8_t & dest, const uint8_t val);
+		void sub_8_c(uint8_t & dest, const uint8_t val);
+		void and_8(uint8_t & dest, const uint8_t val);
+		void or_8(uint8_t & dest, const uint8_t val);
+		void xor_8(uint8_t & dest, const uint8_t val);
+		void cp_8(uint8_t val1, const uint8_t val2);
+
+		template<class T> void inc_8(T & val);
+		template<class T> void dec_8(T & dest);
 
 	public :
 		Cpu();
@@ -144,6 +155,7 @@ class Cpu {
 		void print_sp() const{std::cout<<"Stack pointer:: "<<sp<<std::endl;}
 		void print_stack(int offset=1) const ;
 		void print_reg() const;
+		void print_flag() const;
 
 
 		//int getValue() const { return this->value; } 

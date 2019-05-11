@@ -6,8 +6,10 @@ Cpu::Cpu(){
 }
 
 void Cpu::reset(){
+    nullset();
     a=1; //GB, not the same for GBC and GBC //not clear in doc so not sure
     f=0xB0;
+    pc=0x100;
     set_bc(0x13);
     set_de(0xD8);
     set_hl(0x14D);
@@ -63,6 +65,7 @@ void Cpu::nullset(){
 
 //TODO check that cartridge size < 32kB = 32768 octets
 void Cpu::load_cartridge(std::vector<char> cartridge){
+    this->nullset();
 	this->reset();
 	// copy cartridge content to memory
 	auto cart_end = cartridge.end();
@@ -70,6 +73,7 @@ void Cpu::load_cartridge(std::vector<char> cartridge){
 		cart_end = cartridge.begin()+CARTRIDGE_SIZE;
 	}
 	std::copy(cartridge.begin(), cart_end, this->memory.begin());
+    this->reset();
 }
 
 void Cpu::print_cartridge_info(){
@@ -257,6 +261,15 @@ void Cpu::print_reg() const{
         
 }
 
+void Cpu::print_flag() const{
+    std::cout<<std::endl<<"Flags: "<<std::endl;
+    std::cout<<"Z  N  H  C"<<std::endl;
+    std::cout<<(int)flag.z<<"  ";
+    std::cout<<(int)flag.n<<"  ";
+    std::cout<<(int)flag.h<<"  ";
+    std::cout<<(int)flag.c<<"  "<<std::endl;
+}
+
 
 void Cpu::emulate(){
 
@@ -430,6 +443,96 @@ void Cpu::emulate(){
 
         case 0x08 : ob=3; memory[nn()]=memory[sp]; break;
 
+        //ALU
+        //ADD      
+        case 0x87 : ob=1; add_8(a,a); break;
+        case 0x80 : ob=1; add_8(a,b); break;
+        case 0x81 : ob=1; add_8(a,c); break;
+        case 0x82 : ob=1; add_8(a,d); break;
+        case 0x83 : ob=1; add_8(a,e); break;
+        case 0x84 : ob=1; add_8(a,h); break;
+        case 0x85 : ob=1; add_8(a,l); break;
+        case 0x86 : ob=1; add_8(a,get_hl_ind()); break;
+        case 0xC6 : ob=2; add_8(a,op1()); break;
+
+        case 0x8F : ob=1; add_8_c(a,a); break;
+        case 0x88 : ob=1; add_8_c(a,b); break;
+        case 0x89 : ob=1; add_8_c(a,c); break;
+        case 0x8A : ob=1; add_8_c(a,d); break;
+        case 0x8B : ob=1; add_8_c(a,e); break;
+        case 0x8C : ob=1; add_8_c(a,h); break;
+        case 0x8D : ob=1; add_8_c(a,l); break;
+        case 0x8E : ob=1; add_8_c(a,get_hl_ind()); break;
+        case 0xCE : ob=2; add_8_c(a,op1()); break;
+
+        case 0x97 : ob=1; sub_8(a,a); break;
+        case 0x90 : ob=1; sub_8(a,b); break;
+        case 0x91 : ob=1; sub_8(a,c); break;
+        case 0x92 : ob=1; sub_8(a,d); break;
+        case 0x93 : ob=1; sub_8(a,e); break;
+        case 0x94 : ob=1; sub_8(a,h); break;
+        case 0x95 : ob=1; sub_8(a,l); break;
+        case 0x96 : ob=1; sub_8(a,get_hl_ind()); break;
+        case 0xD6 : ob=2; sub_8(a,op1()); break;
+
+        case 0x9F : ob=1; sub_8_c(a,a); break;
+        case 0x98 : ob=1; sub_8_c(a,b); break;
+        case 0x99 : ob=1; sub_8_c(a,c); break;
+        case 0x9A : ob=1; sub_8_c(a,d); break;
+        case 0x9B : ob=1; sub_8_c(a,e); break;
+        case 0x9C : ob=1; sub_8_c(a,h); break;
+        case 0x9D : ob=1; sub_8_c(a,l); break;
+        case 0x9E : ob=1; sub_8_c(a,get_hl_ind()); break;
+        case 0xDE : ob=2; sub_8_c(a,op1()); break;
+
+        case 0xA7 : ob=1; and_8(a,a); break;
+        case 0xA0 : ob=1; and_8(a,b); break;
+        case 0xA1 : ob=1; and_8(a,c); break;
+        case 0xA2 : ob=1; and_8(a,d); break;
+        case 0xA3 : ob=1; and_8(a,e); break;
+        case 0xA4 : ob=1; and_8(a,h); break;
+        case 0xA5 : ob=1; and_8(a,l); break;
+        case 0xA6 : ob=1; and_8(a,get_hl_ind()); break;
+        case 0xE6 : ob=2; and_8(a,op1()); break;
+
+        case 0xB7 : ob=1; or_8(a,a); break;
+        case 0xB0 : ob=1; or_8(a,b); break;
+        case 0xB1 : ob=1; or_8(a,c); break;
+        case 0xB2 : ob=1; or_8(a,d); break;
+        case 0xB3 : ob=1; or_8(a,e); break;
+        case 0xB4 : ob=1; or_8(a,h); break;
+        case 0xB5 : ob=1; or_8(a,l); break;
+        case 0xB6 : ob=1; or_8(a,get_hl_ind()); break;
+        case 0xF6 : ob=2; or_8(a,op1()); break;
+
+        case 0xBF : ob=1; cp_8(a,a); break;
+        case 0xB8 : ob=1; cp_8(a,b); break;
+        case 0xB9 : ob=1; cp_8(a,c); break;
+        case 0xBA : ob=1; cp_8(a,d); break;
+        case 0xBB : ob=1; cp_8(a,e); break;
+        case 0xBC : ob=1; cp_8(a,h); break;
+        case 0xBD : ob=1; cp_8(a,l); break;
+        case 0xBE : ob=1; cp_8(a,get_hl_ind()); break;
+        case 0xFE : ob=2; cp_8(a,op1()); break;
+
+        case 0x3C : ob=1; inc_8(a); break;
+        case 0x04 : ob=1; inc_8(b); break;
+        case 0x0C : ob=1; inc_8(c); break;
+        case 0x14 : ob=1; inc_8(d); break;
+        case 0x1C : ob=1; inc_8(e); break;
+        case 0x24 : ob=1; inc_8(h); break;
+        case 0x2C : ob=1; inc_8(l); break;
+        case 0x34 : ob=1; inc_8(hl_ind()); break;
+
+        case 0x3D : ob=1; dec_8(a); break;
+        case 0x05 : ob=1; dec_8(b); break;
+        case 0x0D : ob=1; dec_8(c); break;
+        case 0x15 : ob=1; dec_8(d); break;
+        case 0x1D : ob=1; dec_8(e); break;
+        case 0x25 : ob=1; dec_8(h); break;
+        case 0x2D : ob=1; dec_8(l); break;
+        case 0x35 : ob=1; dec_8(hl_ind()); break;
+
         //POP PUSH
         case 0xF5 : ob = 1; push(get_af()); break;
         case 0xC5 : ob = 1; push(get_bc()); break;
@@ -549,4 +652,87 @@ void Cpu::bit(const uint8_t b, const uint8_t n){
     flag.z=n&1<<b;
     flag.n=0;
     flag.h=1;
+}
+
+void Cpu::add_8(uint8_t & dest, const uint8_t val){
+    uint16_t res = dest+val;
+
+    if (res==0) flag.z=0;
+    flag.n=0;
+    flag.h = ((dest&0x0f) + (val&0x0f)) & 0x10; //set if not null
+    flag.c = (dest+val)&0x0100; //set if not null
+
+    assert(res<=0x01ff);
+    dest = (uint8_t)(res & 0x00FF);
+}
+
+//Todo What about the case where dest=val=0xff
+//then dest+val+1 = 0x0200
+void Cpu::add_8_c(uint8_t & dest, const uint8_t val){
+    add_8(dest, val);
+    add_8(dest, flag.c);
+}
+
+void Cpu::sub_8(uint8_t & dest, const uint8_t val){
+    uint16_t res_c = dest + ~val + 1;
+
+    if ((res_c&0x00ff)==0) flag.z=0;
+    flag.n=1;
+    flag.h = ((dest&0xf) + ((~val)&0xf) + 1)&0x10; //set if no borrow
+    flag.c = res_c & 0x0100; //set if no borrow
+
+    dest = res_c&0x00ff;
+}
+void Cpu::sub_8_c(uint8_t & dest, const uint8_t val){
+    sub_8_c(dest, val);
+    sub_8_c(dest, flag.c);
+}
+
+void Cpu::and_8(uint8_t & dest, const uint8_t val){
+    dest=dest&val;
+    if (dest==0) flag.z=0;
+    flag.n=0;
+    flag.h=1;
+    flag.c=0;
+}
+
+void Cpu::or_8(uint8_t & dest, const uint8_t val){
+    dest=dest|val;
+    if (dest==0) flag.z=0;
+    flag.n=0;
+    flag.h=0;
+    flag.c=0;
+}
+
+void Cpu::xor_8(uint8_t & dest, const uint8_t val){
+    dest=dest^val;
+    if (dest==0) flag.z=0;
+    flag.n=0;
+    flag.h=0;
+    flag.c=0;
+}
+
+void Cpu::cp_8(uint8_t val1, const uint8_t val2){
+    sub_8(val1, val2); //ompare A with n. This is basically an A - n  subtraction instruction but the results are thrown  away
+}
+
+template<class T>
+void Cpu::inc_8(T & val){
+    uint16_t res = val+1;
+
+    if (res==0) flag.z=0;
+    flag.n=0;
+    flag.h = ((val&0x0f) + 1) & 0x10; //set if not null
+}
+
+template<class T>
+void Cpu::dec_8(T & dest){
+    uint8_t val=1;
+    uint16_t res_c = dest + ~val + 1;
+
+    if ((res_c&0x00ff)==0) flag.z=0;
+    flag.n=1;
+    flag.h = ((dest&0xf) + ((~val)&0xf) + 1)&0x10; //set if no borrow
+
+    dest = res_c&0x00ff;
 }
