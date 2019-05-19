@@ -61,6 +61,8 @@ int Disassembler::disassemble_next_op(std::vector<char>::const_iterator it) cons
     switch(opcode){
                
         //LDaaa"C", *(it+1)); break; 
+        case 0x06 : opbytes = print_cmd("LD", "B", *(it+1)); break; 
+        case 0x0E : opbytes = print_cmd("LD", "C", *(it+1)); break; 
         case 0x16 : opbytes = print_cmd("LD", "D", *(it+1)); break; 
         case 0x1E : opbytes = print_cmd("LD", "E", *(it+1)); break; 
         case 0x26 : opbytes = print_cmd("LD", "H", *(it+1)); break; 
@@ -280,15 +282,15 @@ int Disassembler::disassemble_next_op(std::vector<char>::const_iterator it) cons
         case 0xAE : std::cout<<"XOR (HL)"<<std::endl; opbytes = 1; break;
         case 0xEE : std::cout<<"XOR $"<<(int)*(it+1)<<std::endl; opbytes = 2; break;
 
-        case 0xBF : std::cout<<"CP  A"<<std::endl; opbytes = 1; break;
-        case 0xB8 : std::cout<<"CP  B"<<std::endl; opbytes = 1; break;
-        case 0xB9 : std::cout<<"CP  C"<<std::endl; opbytes = 1; break;
-        case 0xBA : std::cout<<"CP  D"<<std::endl; opbytes = 1; break;
-        case 0xBB : std::cout<<"CP  E"<<std::endl; opbytes = 1; break;
-        case 0xBC : std::cout<<"CP  H"<<std::endl; opbytes = 1; break;
-        case 0xBD : std::cout<<"CP  L"<<std::endl; opbytes = 1; break;
-        case 0xBE : std::cout<<"CP  (HL)"<<std::endl; opbytes = 1; break;
-        case 0xFE : std::cout<<"CP  $"<<(int)*(it+1)<<std::endl; opbytes = 2; break;
+        case 0xBF : std::cout<<"CP A, A"<<std::endl; opbytes = 1; break;
+        case 0xB8 : std::cout<<"CP A, B"<<std::endl; opbytes = 1; break;
+        case 0xB9 : std::cout<<"CP A, C"<<std::endl; opbytes = 1; break;
+        case 0xBA : std::cout<<"CP A, D"<<std::endl; opbytes = 1; break;
+        case 0xBB : std::cout<<"CP A, E"<<std::endl; opbytes = 1; break;
+        case 0xBC : std::cout<<"CP A, H"<<std::endl; opbytes = 1; break;
+        case 0xBD : std::cout<<"CP A, L"<<std::endl; opbytes = 1; break;
+        case 0xBE : std::cout<<"CP A, (HL)"<<std::endl; opbytes = 1; break;
+        case 0xFE : std::cout<<"CP A, $"<<(int)*(it+1)<<std::endl; opbytes = 2; break;
 
         case 0x3C : std::cout<<"INC A"<<std::endl; opbytes = 1; break;
         case 0x04 : std::cout<<"INC B"<<std::endl; opbytes = 1; break;
@@ -405,34 +407,71 @@ int Disassembler::disassemble_next_op(std::vector<char>::const_iterator it) cons
                 case 0x3E : print_cmd("SRL","(HL)"); break;
 
                 //bit opcodes
-                case 0x47 : print_cmd("BIT",*(it+1),"A"); opbytes=3; break;
-                case 0x40 : print_cmd("BIT",*(it+1),"B"); opbytes=3; break;
-                case 0x41 : print_cmd("BIT",*(it+1),"C"); opbytes=3; break;
-                case 0x42 : print_cmd("BIT",*(it+1),"D"); opbytes=3; break;
-                case 0x43 : print_cmd("BIT",*(it+1),"E"); opbytes=3; break;
-                case 0x44 : print_cmd("BIT",*(it+1),"H"); opbytes=3; break;
-                case 0x45 : print_cmd("BIT",*(it+1),"L"); opbytes=3; break;
-                case 0x46 : print_cmd("BIT",*(it+1),"(HL)"); opbytes=3; break;
+                default :{
+                    //Get info from opcode
+                    uint8_t upper = (*(it+1)>>4)&0x0f;
+                    uint8_t lower = (*(it+1))&0x0f;
 
-                case 0xC7 : print_cmd("SET",*(it+1),"A"); opbytes=3; break;
-                case 0xC0 : print_cmd("SET",*(it+1),"B"); opbytes=3; break;
-                case 0xC1 : print_cmd("SET",*(it+1),"C"); opbytes=3; break;
-                case 0xC2 : print_cmd("SET",*(it+1),"D"); opbytes=3; break;
-                case 0xC3 : print_cmd("SET",*(it+1),"E"); opbytes=3; break;
-                case 0xC4 : print_cmd("SET",*(it+1),"H"); opbytes=3; break;
-                case 0xC5 : print_cmd("SET",*(it+1),"L"); opbytes=3; break;
-                case 0xC6 : print_cmd("SET",*(it+1),"(HL)"); opbytes=3; break;
-
-                case 0x87 : print_cmd("RES",*(it+1),"A"); opbytes=3; break;
-                case 0x80 : print_cmd("RES",*(it+1),"B"); opbytes=3; break;
-                case 0x81 : print_cmd("RES",*(it+1),"C"); opbytes=3; break;
-                case 0x82 : print_cmd("RES",*(it+1),"D"); opbytes=3; break;
-                case 0x83 : print_cmd("RES",*(it+1),"E"); opbytes=3; break;
-                case 0x84 : print_cmd("RES",*(it+1),"H"); opbytes=3; break;
-                case 0x85 : print_cmd("RES",*(it+1),"L"); opbytes=3; break;
-                case 0x86 : print_cmd("RES",*(it+1),"(HL)"); opbytes=3; break;
+                    std::vector<char const *> nb_to_reg(16);
+                    nb_to_reg[0]="B";       nb_to_reg[8]="B";   
+                    nb_to_reg[1]="C";       nb_to_reg[9]="C";   
+                    nb_to_reg[2]="D";       nb_to_reg[10]="D";   
+                    nb_to_reg[3]="E";       nb_to_reg[11]="E";   
+                    nb_to_reg[4]="H";       nb_to_reg[12]="H";   
+                    nb_to_reg[5]="L";       nb_to_reg[13]="L";   
+                    nb_to_reg[6]="(HL)";    nb_to_reg[14]="(HL)";
+                    nb_to_reg[7]="A";       nb_to_reg[15]="A";   
 
 
+
+                    char const * ins="";
+                    if(upper>=4 && upper<8){
+                        ins = "BIT";
+                    }
+                    else if(upper>=8 && upper<12){
+                        ins = "RES";
+                    }
+                    else if(upper>=12 && upper<16){
+                        ins = "SET";
+                    }
+                    else{
+                        std::cout<<"Instruction not disassembled yet"<<std::endl;
+                        throw "instruction not disassembled";
+                    }
+
+                    //print instruction
+                    uint8_t byte_index = ((upper-4)*2+(lower/8))%8;
+                    print_cmd(ins, byte_index, nb_to_reg[lower]);
+
+                    // }
+                    // case 0x47 : print_cmd("BIT",0,"A"); break;
+                    // case 0x40 : print_cmd("BIT",0,"B"); break;
+                    // case 0x41 : print_cmd("BIT",0,"C"); break;
+                    // case 0x42 : print_cmd("BIT",0,"D"); break;
+                    // case 0x43 : print_cmd("BIT",0,"E"); break;
+                    // case 0x44 : print_cmd("BIT",0,"H"); break;
+                    // case 0x45 : print_cmd("BIT",0,"L"); break;
+                    // case 0x46 : print_cmd("BIT",0,"(HL)"); break;
+
+                    // case 0xC7 : print_cmd("SET",0,"A"); break;
+                    // case 0xC0 : print_cmd("SET",0,"B"); break;
+                    // case 0xC1 : print_cmd("SET",0,"C"); break;
+                    // case 0xC2 : print_cmd("SET",0,"D"); break;
+                    // case 0xC3 : print_cmd("SET",0,"E"); break;
+                    // case 0xC4 : print_cmd("SET",0,"H"); break;
+                    // case 0xC5 : print_cmd("SET",0,"L"); break;
+                    // case 0xC6 : print_cmd("SET",0,"(HL)"); break;
+
+                    // case 0x87 : print_cmd("RES",0,"A"); break;
+                    // case 0x80 : print_cmd("RES",0,"B"); break;
+                    // case 0x81 : print_cmd("RES",0,"C"); break;
+                    // case 0x82 : print_cmd("RES",0,"D"); break;
+                    // case 0x83 : print_cmd("RES",0,"E"); break;
+                    // case 0x84 : print_cmd("RES",0,"H"); break;
+                    // case 0x85 : print_cmd("RES",0,"L"); break;
+                    // case 0x86 : print_cmd("RES",0,"(HL)"); break;
+
+                }
 
             }break;
         }
@@ -508,7 +547,7 @@ int Disassembler::disassemble_next_op(std::vector<char>::const_iterator it) cons
         case 0xD9 : opbytes = print_cmd("RETI"); break;
 
         default:
-            std::cout<<"Instruction not implemented yet"<<std::endl;
+            std::cout<<"Instruction not disassembled yet"<<std::endl;
             throw "instruction not disassembled";
     }
     if (opbytes<1){

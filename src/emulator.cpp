@@ -29,9 +29,11 @@ int main(int argc, char* argv[]){
 	std::string input="";
 	std::string cmd="s";
 
+	//dis.disassemble_next_op(cpu.get_pc_iterator());  
+
 	while(true){
-		std::cin>>input;
-		cmd=input;
+		// std::cin>>input;
+		// cmd=input;
 		// if(std::cin.get()!='\n'){
 		//  	cmd=input; //if enter is pressed directly, the cmd do not change
 		// }
@@ -41,19 +43,25 @@ int main(int argc, char* argv[]){
 								
 		//std::cout << "Entered  "<< input <<std::endl;
 
-		if (cmd=="e") cpu.emulate(); //emulate next operation
-		else if (cmd=="d") dis.disassemble_next_op(cpu.get_pc_iterator()); //disassemble next operation
-		//case "mem" : cpu.print_mem(cpu.get_pc(), 4); break; //print memory
-		else if (cmd=="mem") cpu.print_mem(cpu.get_pc(), 5, true);
-		//else if (cmd=="*pc") cpu.print_mem(cpu.get_pc(), 4);
-		else if (cmd=="stack" || cmd=="st") cpu.print_stack(5);
-		else if (cmd=="reg" || cmd=="r") cpu.print_reg();
-		else if (cmd=="flag" || cmd=="f") cpu.print_flag();
-		else { //(cmd=="s") //verbose display
-			cpu.print_mem(cpu.get_pc(), 4);
-			dis.disassemble_next_op(cpu.get_pc_iterator()); 
-			cpu.emulate(); 
-		}
+		// if (cmd=="e") cpu.emulate(); //emulate next operation
+		// else if (cmd=="d") dis.disassemble_next_op(cpu.get_pc_iterator()); //disassemble next operation
+		// //case "mem" : cpu.print_mem(cpu.get_pc(), 4); break; //print memory
+		// else if (cmd=="mem") cpu.print_mem(cpu.get_pc(), 5, true);
+		// //else if (cmd=="*pc") cpu.print_mem(cpu.get_pc(), 4);
+		// else if (cmd=="stack" || cmd=="st") cpu.print_stack(5);
+		// else if (cmd=="reg" || cmd=="r") cpu.print_reg();
+		// else if (cmd=="flag" || cmd=="f") cpu.print_flag();
+		// else { //(cmd=="s") //verbose display
+		// 	cpu.print_mem(cpu.get_pc(), 4);
+		// 	dis.disassemble_next_op(cpu.get_pc_iterator()); 
+		// 	cpu.emulate(); 
+		// }
+		// 
+			// 	cpu.print_mem(cpu.get_pc(), 4);	
+		
+		cpu.print_mem(cpu.get_pc(), 4);	
+		dis.disassemble_next_op(cpu.get_pc_iterator());  
+		cpu.emulate();
 	}
 
 

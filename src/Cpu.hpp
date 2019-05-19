@@ -75,6 +75,7 @@ class Cpu {
 		uint8_t opcode() const { return this->memory[this->pc];}
 		///Returns the byte stored at program counter + 1 in the memory
 		uint8_t op1() const { return this->memory[this->pc+1];}
+		signed char op1_signed() const { return (signed char)op1();}
 		///Returns the byte stored at program counter + 2 in the memory
 		uint8_t op2() const { return this->memory[this->pc+2];}
 		///Returns the word stored at program counter + 1 in the memory
@@ -105,8 +106,8 @@ class Cpu {
 
 		void bit(const uint8_t b, const uint8_t n);
 
-		template<class T> void set(const uint8_t b, T & n){ n = n | 1<<b;}
-		template<class T> void res(const uint8_t b, T & n){n = n &  ~(1<<b);}
+		template<class T> void set(const uint8_t b, T & n);
+		template<class T> void res(const uint8_t b, T & n);
 
 		void add_8(uint8_t & dest, const uint8_t val);
 		void add_8_c(uint8_t & dest, const uint8_t val);
@@ -124,15 +125,19 @@ class Cpu {
 		Cpu();
 
 		void load_cartridge(std::vector<char> cartridge);
+		void load_cartridge(const char* file_name);
+
 		void print_cartridge_info();
 		///Load the string code in memory at PC. 
 		///The opcode should be in minuscule with spaces between the words. Exp: 01 0a ff.
 		void load_debug_cartridge(std::string binary_string);
 		void emulate();
 		
+		const std::vector<char> & get_memory() const {return this->memory;}
 		std::vector<char>::const_iterator get_pc_iterator() const;
 		uint16_t get_pc() const { return this->pc;}
 		uint16_t get_sp() const { return this->sp;}
+
 		///Bool table displays the memory as a table if true, inline if false
 		uint8_t get_mem(const uint16_t addr) const { return memory[addr];}
 		uint8_t get_stack(int offset=0) const {return (int)memory[sp+offset];}	

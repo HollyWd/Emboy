@@ -65,6 +65,7 @@ void Cpu::nullset(){
 
 //TODO check that cartridge size < 32kB = 32768 octets
 void Cpu::load_cartridge(std::vector<char> cartridge){
+    assert(cartridge.size()>0);
     this->nullset();
 	this->reset();
 	// copy cartridge content to memory
@@ -73,7 +74,12 @@ void Cpu::load_cartridge(std::vector<char> cartridge){
 		cart_end = cartridge.begin()+CARTRIDGE_SIZE;
 	}
 	std::copy(cartridge.begin(), cart_end, this->memory.begin());
-    this->reset();
+}
+
+void Cpu::load_cartridge(const char * file_name){
+    std::vector<char> char_vect = utils::file_to_byte_vector(file_name);
+    load_cartridge(char_vect);
+    std::cout << "Cartridge is "<< char_vect.size() <<" bytes long"<<std::endl;
 }
 
 void Cpu::print_cartridge_info(){
@@ -270,7 +276,7 @@ void Cpu::print_flag() const{
     std::cout<<(int)flag.c<<"  "<<std::endl;
 }
 
-
+//todo set some values as signed 
 void Cpu::emulate(){
 
 	//std::vector<char>::const_iterator it = get_pc_iterator();
@@ -294,12 +300,12 @@ void Cpu::emulate(){
 
         case 0xE9 : jump(get_hl()); ob=1; break;
 
-        case 0x18 : jump(pc+op1()); ob=2; break;
+        case 0x18 : jump(pc+op1_signed()); ob=2; break;
 
-        case 0x20 : jump(pc+op1(), !flag.z); ob=2; break; 
-        case 0x28 : jump(pc+op1(),  flag.z); ob=2; break;  
-        case 0x30 : jump(pc+op1(), !flag.c); ob=2; break;  
-        case 0x38 : jump(pc+op1(),  flag.c); ob=2; break; 
+        case 0x20 : ob=2; jump(pc+ob+op1_signed(), !flag.z); break; 
+        case 0x28 : ob=2; jump(pc+ob+op1_signed(),  flag.z); break;  
+        case 0x30 : ob=2; jump(pc+ob+op1_signed(), !flag.c); break;  
+        case 0x38 : ob=2; jump(pc+ob+op1_signed(),  flag.c); break; 
 
         //call
         case 0xCD : ob=3; call(nn(), ob); break; 
@@ -330,6 +336,8 @@ void Cpu::emulate(){
         case 0xD9 : ob=1; ret(); break; //Todo enable interrupts
 
         //8-bit Load
+        case 0x06 : ob=2; b=op1(); break;
+        case 0x0e : ob=2; c=op1(); break;
         case 0x16 : ob=2; d=op1(); break; 
         case 0x1E : ob=2; e=op1(); break; 
         case 0x26 : ob=2; h=op1(); break; 
@@ -505,6 +513,16 @@ void Cpu::emulate(){
         case 0xB6 : ob=1; or_8(a,get_hl_ind()); break;
         case 0xF6 : ob=2; or_8(a,op1()); break;
 
+        case 0xAF : ob=1; xor_8(a,a); break;
+        case 0xA8 : ob=1; xor_8(a,b); break;
+        case 0xA9 : ob=1; xor_8(a,c); break;
+        case 0xAA : ob=1; xor_8(a,d); break;
+        case 0xAB : ob=1; xor_8(a,e); break;
+        case 0xAC : ob=1; xor_8(a,h); break;
+        case 0xAD : ob=1; xor_8(a,l); break;
+        case 0xAE : ob=1; xor_8(a,get_hl_ind()); break;
+        case 0xEE : ob=2; xor_8(a,op1()); break;
+
         case 0xBF : ob=1; cp_8(a,a); break;
         case 0xB8 : ob=1; cp_8(a,b); break;
         case 0xB9 : ob=1; cp_8(a,c); break;
@@ -548,33 +566,34 @@ void Cpu::emulate(){
         case 0xCB :{
             ob=2;
             switch (op1()){
-                case 0x47 : ob=3; bit(op2(),a); break;
-                case 0x40 : ob=3; bit(op2(),b); break;
-                case 0x41 : ob=3; bit(op2(),c); break;
-                case 0x42 : ob=3; bit(op2(),d); break;
-                case 0x43 : ob=3; bit(op2(),e); break;
-                case 0x44 : ob=3; bit(op2(),h); break;
-                case 0x45 : ob=3; bit(op2(),l); break;
-                case 0x46 : ob=3; bit(op2(), get_hl_ind()); break;
+                case 0x47 : bit(0,a); break;
+                case 0x40 : bit(0,b); break;
+                case 0x41 : bit(0,c); break;
+                case 0x42 : bit(0,d); break;
+                case 0x43 : bit(0,e); break;
+                case 0x44 : bit(0,h); break;
+                case 0x45 : bit(0,l); break;
+                case 0x46 : bit(0, get_hl_ind()); break;
 
-                case 0xC7 : ob=3; set(op2(),a); break;
-                case 0xC0 : ob=3; set(op2(),b); break;
-                case 0xC1 : ob=3; set(op2(),c); break;
-                case 0xC2 : ob=3; set(op2(),d); break;
-                case 0xC3 : ob=3; set(op2(),e); break;
-                case 0xC4 : ob=3; set(op2(),h); break;
-                case 0xC5 : ob=3; set(op2(),l); break;
-                case 0xC6 : ob=3; set(op2(), hl_ind()); break;
+                case 0xC7 : set(0,a); break;
+                case 0xC0 : set(0,b); break;
+                case 0xC1 : set(0,c); break;
+                case 0xC2 : set(0,d); break;
+                case 0xC3 : set(0,e); break;
+                case 0xC4 : set(0,h); break;
+                case 0xC5 : set(0,l); break;
+                case 0xC6 : set(0, hl_ind()); break;
 
-                case 0x87 : ob=3; res(op2(),a); break;
-                case 0x80 : ob=3; res(op2(),b); break;
-                case 0x81 : ob=3; res(op2(),c); break;
-                case 0x82 : ob=3; res(op2(),d); break;
-                case 0x83 : ob=3; res(op2(),e); break;
-                case 0x84 : ob=3; res(op2(),h); break;
-                case 0x85 : ob=3; res(op2(),l); break;
-                case 0x86 : ob=3; res(op2(), hl_ind()); break;
+                case 0x87 : res(0,a); break;
+                case 0x80 : res(0,b); break;
+                case 0x81 : res(0,c); break;
+                case 0x82 : res(0,d); break;
+                case 0x83 : res(0,e); break;
+                case 0x84 : res(0,h); break;
+                case 0x85 : res(0,l); break;
+                case 0x86 : res(0, hl_ind()); break;
             }
+            break;
         }
 
 
@@ -648,11 +667,25 @@ void Cpu::ret(const bool dojump){
 }
 
 void Cpu::bit(const uint8_t b, const uint8_t n){
-    assert((b>=0) || (b<=7));
-    flag.z=n&1<<b;
+    uint8_t bit_index = b&0x0F;
+    assert((bit_index>=0) || (bit_index<=7));
+    flag.z=n&1<<bit_index;
     flag.n=0;
     flag.h=1;
 }
+
+template<class T> void Cpu::set(const uint8_t b, T & n){
+    uint8_t bit_index = b&0x0F;
+    assert((bit_index>=0) || (bit_index<=7));
+    n = n | 1<<bit_index;
+}
+
+template<class T> void Cpu::res(const uint8_t b, T & n){
+    uint8_t bit_index = b&0x0F;
+    assert((bit_index>=0) || (bit_index<=7));
+    n = n &  ~(1<<bit_index);
+}
+
 
 void Cpu::add_8(uint8_t & dest, const uint8_t val){
     uint16_t res = dest+val;

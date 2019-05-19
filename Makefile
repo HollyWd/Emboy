@@ -1,6 +1,6 @@
 CC = g++
 CPPFLAGS= -Wall -funsigned-char -pg -g #flags for compilation
-LDFLAGS= -Wall -funsigned-char -pg -g #flags for linking
+LDFLAGS= -Wall -funsigned-char -pg -g -lsfml-graphics -lsfml-window -lsfml-system #flags for linking
 
 #SRCS = $(shell find src -name "*.cpp") #use the shell find function that lists all files in src folder following the "*.cpp" regular expression
 #OBJS = $(patsubst %.cpp, %.o, $(src))
@@ -10,22 +10,28 @@ SRCDIR = src
 BUILDDIR = build
 INC = -I$(SRCDIR) -I$(SRCDIR)/tests
 
-disassembler : $(SRCDIR)/disassembler.cpp $(BUILDDIR)/Disassembler.o $(BUILDDIR)/utils.o
-	$(CC) $(CPPFLAGS) $^ -o $(BUILDDIR)/$@ 
 #$^ = list of dependancies of upper line
 #$@ = target name
 
+display : $(BUILDDIR)/display.o $(BUILDDIR)/Cpu.o $(BUILDDIR)/Video.o $(BUILDDIR)/utils.o
+	$(CC) $^ -o $(BUILDDIR)/$@  $(LDFLAGS)
+	#$(CC) $(LDFLAGS) $^ -o $(BUILDDIR)/$@ 
+
+disassembler : $(SRCDIR)/disassembler.cpp $(BUILDDIR)/Disassembler.o $(BUILDDIR)/utils.o
+	$(CC) $(LDFLAGS) $^ -o $(BUILDDIR)/$@ 
+
+
 emulator : $(SRCDIR)/emulator.cpp $(BUILDDIR)/Cpu.o $(BUILDDIR)/Disassembler.o $(BUILDDIR)/utils.o 
-	$(CC) $(CPPFLAGS) $^ -o $(BUILDDIR)/$@ 
+	$(CC) $(LDFLAGS) $^ -o $(BUILDDIR)/$@ 
 
 test_cpu : $(SRCDIR)/test_cpu.cpp $(BUILDDIR)/Cpu.o
-	$(CC) $(CPPFLAGS) $^ -o $(BUILDDIR)/$@ 
+	$(CC) $(LDFLAGS) $^ -o $(BUILDDIR)/$@ 
 
 test_disassembler : $(SRCDIR)/test_disassembler.cpp $(BUILDDIR)/Disassembler.o
-	$(CC) $(CPPFLAGS) $^ -o $(BUILDDIR)/$@ 
+	$(CC) $(LDFLAGS) $^ -o $(BUILDDIR)/$@ 
 
 test_emulator : $(SRCDIR)/tests/test_emulator.cpp $(BUILDDIR)/Test.o $(BUILDDIR)/Cpu.o $(BUILDDIR)/Disassembler.o $(BUILDDIR)/utils.o 
-	$(CC) $(CPPFLAGS) ${INC}  $^ -o $(BUILDDIR)/$@ 
+	$(CC) $(LDFLAGS) ${INC}  $^ -o $(BUILDDIR)/$@ 
 
 ## Build object files	
 #TODO fix .o destination (is src while should be build)
@@ -41,4 +47,4 @@ $(BUILDDIR)/%.o : $(SRCDIR)/tests/%.cpp $(SRCDIR)/tests/%.hpp
 
 clean :
 	# -f will make the remove work even if the files do not exist
-	rm -f $(BUILDDIR)/* $(SRCDIR)/*.o 
+	rm -f $(BUILDDIR)/* 
