@@ -30,9 +30,8 @@ Press `s` to disassemble and emulate the next instruction. The instruction that 
 
 # Todo
 
- - Finish emulating the CPU instruction
- - Test the instructions
- - Emulate graphic hardware
+ - manage register overflow
+ - remove char type, use uint 8 everywhere (check first that there is no issue to read uint8 from the file buffer)
 
 # Sources 
  - https://realboyemulator.files.wordpress.com

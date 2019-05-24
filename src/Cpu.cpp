@@ -187,24 +187,36 @@ void Cpu::print_mem(int start_index, int byte_nb, bool table) const{
 		end_index=MEM_SIZE;
 	}
 
-	std::cout<<std::endl<<"Memory: "<<std::endl;
+	
 
-	if(!table){
-		int i = start_index;
-		while (i<end_index){
-			printf("0x%04x:  ",i);
-			for(size_t j=0; j<8; j++){
-				if (i>end_index) break;
-				std::cout<<std::hex<<std::setfill('0') << std::setw(2)<<(int)this->memory[i]; i++;
-				if (i>end_index) break;
-				std::cout<<std::hex<<std::setfill('0') << std::setw(2)<<(int)this->memory[i]<<" "; i++;		
-			}
-			std::cout<<std::endl;		
-			//std::cout<<*(buffer+pc)<<std::endl;
-		}
-	}
+	// if(!table){
+	// 	int i = start_index;
+	// 	while (i<end_index){
+	// 		printf("0x%04x:  ",i);
+	// 		for(size_t j=0; j<8; j++){
+	// 			if (i>end_index) break;
+	// 			std::cout<<std::hex<<std::setfill('0') << std::setw(2)<<(int)this->memory[i]; i++;
+	// 			if (i>end_index) break;
+	// 			std::cout<<std::hex<<std::setfill('0') << std::setw(2)<<(int)this->memory[i]<<" "; i++;		
+	// 		}
+	// 		std::cout<<std::endl;		
+	// 		//std::cout<<*(buffer+pc)<<std::endl;
+	// 	}
+	// }
+    
+    if(!table){
+        int i = start_index;
+        printf("0x%04x:  ",i);
+        while (i<end_index){          
+            if (i>end_index) break;
+            std::cout<<std::hex<<std::setfill('0') << std::setw(2)<<(int)this->memory[i] <<" "; i++;
+        }
+            std::cout<<" ";//std::endl;       
+            //std::cout<<*(buffer+pc)<<std::endl;        
+    } 
 
 	else{
+        std::cout<<std::endl<<"Memory: "<<std::endl;
 		const char * c1f = "      "; //col1 fill
 		const char * c2f1 = "----------"; //col2 fill 1
 		const char * c2f2 = "|        |"; //col2 fill 2
@@ -642,7 +654,7 @@ void Cpu::push(const uint16_t val){
 	decrement_sp();
 	memory[sp]=val & 0x00ff;
 	decrement_sp();
-	memory[sp]=val<<8;
+	memory[sp]=val>>8;
 }
 
 uint16_t Cpu::pop(){
@@ -756,6 +768,8 @@ void Cpu::inc_8(T & val){
     if (res==0) flag.z=0;
     flag.n=0;
     flag.h = ((val&0x0f) + 1) & 0x10; //set if not null
+
+    val=res;
 }
 
 template<class T>

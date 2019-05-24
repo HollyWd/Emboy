@@ -49,10 +49,10 @@ class Cpu {
 		void nullset();
 		void reset();/// set all Cpu values to zero
 
-		void set_hl(const uint16_t nn){h=((nn & 0xFF00)<<8); l=(nn & 0x00FF);}
-		void set_af(const uint16_t nn){a=((nn & 0xFF00)<<8); f=(nn & 0x00FF);}
-		void set_bc(const uint16_t nn){b=((nn & 0xFF00)<<8); c=(nn & 0x00FF);}
-		void set_de(const uint16_t nn){d=((nn & 0xFF00)<<8); e=(nn & 0x00FF);}
+		void set_hl(const uint16_t nn){h=((nn & 0xFF00)>>8); l=(nn & 0x00FF);}
+		void set_af(const uint16_t nn){a=((nn & 0xFF00)>>8); f=(nn & 0x00FF);}
+		void set_bc(const uint16_t nn){b=((nn & 0xFF00)>>8); c=(nn & 0x00FF);}
+		void set_de(const uint16_t nn){d=((nn & 0xFF00)>>8); e=(nn & 0x00FF);}
 		void set_sp(const uint16_t nn){sp=nn;}
 
 		char & hl_ind(){return memory[get_hl()];} //
@@ -161,7 +161,6 @@ class Cpu {
 		void print_stack(int offset=1) const ;
 		void print_reg() const;
 		void print_flag() const;
-
 
 		//int getValue() const { return this->value; } 
 };

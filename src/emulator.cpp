@@ -4,12 +4,21 @@
 #include <vector>
 #include <string>
 
+		void m(Cpu c, uint16_t addr){std::cout<< (int)c.get_mem(addr);}
+		void m(Cpu c){c.print_mem(c.get_pc(), 5, true);}
+		void r(Cpu c){ c.print_reg();}
+		void fl(Cpu c){c.print_flag();}
+		void s(Cpu c){c.print_stack(5);}
+		void prc(Cpu c){c.print_pc();}
+
+
 int main(int argc, char* argv[]){
 
 	// Create objects
 	std::cout << "Let's emulate!"<<std::endl;
 	Disassembler dis;
 	Cpu cpu;
+	Cpu & c=cpu;
 
 	//Read input file
     std::cout << "Cartridge file is "<< argv[1]<<std::endl;
@@ -59,8 +68,8 @@ int main(int argc, char* argv[]){
 		// 
 			// 	cpu.print_mem(cpu.get_pc(), 4);	
 		
-		cpu.print_mem(cpu.get_pc(), 4);	
-		dis.disassemble_next_op(cpu.get_pc_iterator());  
+		cpu.print_mem(cpu.get_pc(), 2);	
+		dis.disassemble_next_op(cpu.get_pc_iterator()) 	;  
 		cpu.emulate();
 	}
 
