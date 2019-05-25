@@ -32,7 +32,7 @@ struct Flag{
 /*! Class emulating a gameboy processor */
 class Cpu {
 	private : 
-		std::vector<char> memory;
+		std::vector<uint8_t> memory;
 		//registers
 		uint8_t a;
 		uint8_t b;
@@ -55,7 +55,7 @@ class Cpu {
 		void set_de(const uint16_t nn){d=((nn & 0xFF00)>>8); e=(nn & 0x00FF);}
 		void set_sp(const uint16_t nn){sp=nn;}
 
-		char & hl_ind(){return memory[get_hl()];} //
+		uint8_t & hl_ind(){return memory[get_hl()];} //
 
 		///Get the value stored at adress in HL (indirect adressing mode)
 		uint8_t get_hl_ind() const {return memory[get_hl()];}
@@ -109,8 +109,10 @@ class Cpu {
 		template<class T> void set(const uint8_t b, T & n);
 		template<class T> void res(const uint8_t b, T & n);
 
-		void add_8(uint8_t & dest, const uint8_t val);
-		void add_8_c(uint8_t & dest, const uint8_t val);
+		///return 1 if overflow
+		uint8_t add_8(uint8_t & dest, const uint8_t val);
+		//return 1 if overflow
+		uint8_t add_8_c(uint8_t & dest, const uint8_t val);
 		void sub_8(uint8_t & dest, const uint8_t val);
 		void sub_8_c(uint8_t & dest, const uint8_t val);
 		void and_8(uint8_t & dest, const uint8_t val);
@@ -118,13 +120,13 @@ class Cpu {
 		void xor_8(uint8_t & dest, const uint8_t val);
 		void cp_8(uint8_t val1, const uint8_t val2);
 
-		template<class T> void inc_8(T & val);
-		template<class T> void dec_8(T & dest);
+		uint8_t inc_8(uint8_t & val);
+		void dec_8(uint8_t & dest);
 
 	public :
 		Cpu();
 
-		void load_cartridge(std::vector<char> cartridge);
+		void load_cartridge(std::vector<uint8_t> cartridge);
 		void load_cartridge(const char* file_name);
 
 		void print_cartridge_info();
@@ -133,8 +135,8 @@ class Cpu {
 		void load_debug_cartridge(std::string binary_string);
 		void emulate();
 		
-		const std::vector<char> & get_memory() const {return this->memory;}
-		std::vector<char>::const_iterator get_pc_iterator() const;
+		const std::vector<uint8_t> & get_memory() const {return this->memory;}
+		std::vector<uint8_t>::const_iterator get_pc_iterator() const;
 		uint16_t get_pc() const { return this->pc;}
 		uint16_t get_sp() const { return this->sp;}
 

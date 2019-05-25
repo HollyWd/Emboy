@@ -1,7 +1,7 @@
 #include "Cpu.hpp"
 
 Cpu::Cpu(){
-    memory = std::vector<char>(MEM_SIZE);
+    memory = std::vector<uint8_t>(MEM_SIZE);
 	this->reset();
 }
 
@@ -51,7 +51,7 @@ void Cpu::reset(){
 void Cpu::nullset(){
 	pc=0x100;
 	sp=SP0;
-	memory = std::vector<char>(65536,0);	
+	memory = std::vector<uint8_t>(65536,0);	
 	a=0;
 	b=0;
 	d=0;
@@ -64,7 +64,7 @@ void Cpu::nullset(){
 }
 
 //TODO check that cartridge size < 32kB = 32768 octets
-void Cpu::load_cartridge(std::vector<char> cartridge){
+void Cpu::load_cartridge(std::vector<uint8_t> cartridge){
     assert(cartridge.size()>0);
     this->nullset();
 	this->reset();
@@ -77,9 +77,9 @@ void Cpu::load_cartridge(std::vector<char> cartridge){
 }
 
 void Cpu::load_cartridge(const char * file_name){
-    std::vector<char> char_vect = utils::file_to_byte_vector(file_name);
-    load_cartridge(char_vect);
-    std::cout << "Cartridge is "<< char_vect.size() <<" bytes long"<<std::endl;
+    std::vector<uint8_t> uint8_vect = utils::file_to_byte_vector(file_name);
+    load_cartridge(uint8_vect);
+    std::cout << "Cartridge is "<< uint8_vect.size() <<" bytes long"<<std::endl;
 }
 
 void Cpu::print_cartridge_info(){
@@ -174,7 +174,7 @@ void Cpu::print_cartridge_info(){
 
 void Cpu::load_debug_cartridge(std::string string_binary_code){
 	this->nullset();
-	std::vector<char> debug_cartridge = utils::string_to_byte_vector(string_binary_code);
+	std::vector<uint8_t> debug_cartridge = utils::string_to_byte_vector(string_binary_code);
 	std::copy(debug_cartridge.begin(), debug_cartridge.end(), this->memory.begin());
 	this->pc=0x00;
 }
@@ -259,7 +259,7 @@ void Cpu::print_stack(int byte_nb) const{
 }
 
 
-std::vector<char>::const_iterator Cpu::get_pc_iterator() const{
+std::vector<uint8_t>::const_iterator Cpu::get_pc_iterator() const{
 	return this->memory.begin() + this->pc;
 }
 
@@ -291,7 +291,7 @@ void Cpu::print_flag() const{
 //todo set some values as signed 
 void Cpu::emulate(){
 
-	//std::vector<char>::const_iterator it = get_pc_iterator();
+	//std::vector<uint8_t>::const_iterator it = get_pc_iterator();
  	//int opcode = *it;
     int ob = 1; //number of bytes used by the operator
     uint16_t pc_before = pc;
@@ -699,29 +699,31 @@ template<class T> void Cpu::res(const uint8_t b, T & n){
 }
 
 
-void Cpu::add_8(uint8_t & dest, const uint8_t val){
+uint8_t Cpu::add_8(uint8_t & dest, const uint8_t val){
     uint16_t res = dest+val;
 
-    if (res==0) flag.z=0;
+    if ((res&0x00ff)==0) flag.z=1;
     flag.n=0;
     flag.h = ((dest&0x0f) + (val&0x0f)) & 0x10; //set if not null
     flag.c = (dest+val)&0x0100; //set if not null
 
     assert(res<=0x01ff);
     dest = (uint8_t)(res & 0x00FF);
+    return (res&0xff00)>>8;
 }
 
 //Todo What about the case where dest=val=0xff
 //then dest+val+1 = 0x0200
-void Cpu::add_8_c(uint8_t & dest, const uint8_t val){
-    add_8(dest, val);
-    add_8(dest, flag.c);
+uint8_t Cpu::add_8_c(uint8_t & dest, const uint8_t val){
+    uint8_t res1 = add_8(dest, val);
+    uint8_t res2 = add_8(dest, flag.c);
+    return res1|res2;
 }
 
 void Cpu::sub_8(uint8_t & dest, const uint8_t val){
     uint16_t res_c = dest + ~val + 1;
 
-    if ((res_c&0x00ff)==0) flag.z=0;
+    if ((res_c&0x00ff)==0) flag.z=1;
     flag.n=1;
     flag.h = ((dest&0xf) + ((~val)&0xf) + 1)&0x10; //set if no borrow
     flag.c = res_c & 0x0100; //set if no borrow
@@ -735,7 +737,7 @@ void Cpu::sub_8_c(uint8_t & dest, const uint8_t val){
 
 void Cpu::and_8(uint8_t & dest, const uint8_t val){
     dest=dest&val;
-    if (dest==0) flag.z=0;
+    if (dest==0) flag.z=1;
     flag.n=0;
     flag.h=1;
     flag.c=0;
@@ -743,7 +745,7 @@ void Cpu::and_8(uint8_t & dest, const uint8_t val){
 
 void Cpu::or_8(uint8_t & dest, const uint8_t val){
     dest=dest|val;
-    if (dest==0) flag.z=0;
+    if (dest==0) flag.z=1;
     flag.n=0;
     flag.h=0;
     flag.c=0;
@@ -751,7 +753,7 @@ void Cpu::or_8(uint8_t & dest, const uint8_t val){
 
 void Cpu::xor_8(uint8_t & dest, const uint8_t val){
     dest=dest^val;
-    if (dest==0) flag.z=0;
+    if (dest==0) flag.z=1;
     flag.n=0;
     flag.h=0;
     flag.c=0;
@@ -761,23 +763,22 @@ void Cpu::cp_8(uint8_t val1, const uint8_t val2){
     sub_8(val1, val2); //ompare A with n. This is basically an A - n  subtraction instruction but the results are thrown  away
 }
 
-template<class T>
-void Cpu::inc_8(T & val){
+uint8_t Cpu::inc_8(uint8_t & val){
     uint16_t res = val+1;
 
-    if (res==0) flag.z=0;
+    if ((res&0x00ff)==0) flag.z=1;
     flag.n=0;
     flag.h = ((val&0x0f) + 1) & 0x10; //set if not null
 
     val=res;
+    return (res&0xFF00)>>8;
 }
 
-template<class T>
-void Cpu::dec_8(T & dest){
+void Cpu::dec_8(uint8_t & dest){
     uint8_t val=1;
     uint16_t res_c = dest + ~val + 1;
 
-    if ((res_c&0x00ff)==0) flag.z=0;
+    if ((res_c&0x00ff)==0) flag.z=1;
     flag.n=1;
     flag.h = ((dest&0xf) + ((~val)&0xf) + 1)&0x10; //set if no borrow
 

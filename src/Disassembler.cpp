@@ -6,7 +6,7 @@ int Disassembler::disassemble_instruction(const std::string &instruction_string)
 {
   
     //Convert input string to a vector of byte
-    std::vector<char> byte_vect = utils::string_to_byte_vector(instruction_string);  
+    std::vector<uint8_t> byte_vect = utils::string_to_byte_vector(instruction_string);  
     //Disassemble the vector of byte
     disassemble_next_op(byte_vect.begin());
 
@@ -52,7 +52,7 @@ int Disassembler::print_cmd(const char * cmd, const char * arg1, const int arg2_
         return 3; 
 }
 
-int Disassembler::disassemble_next_op(std::vector<char>::const_iterator it) const{
+int Disassembler::disassemble_next_op(std::vector<uint8_t>::const_iterator it) const{
     
     //std::cout<<"opcode = "<<std::hex << opcode <<std::endl; 
     int opcode = *it;
@@ -556,9 +556,9 @@ int Disassembler::disassemble_next_op(std::vector<char>::const_iterator it) cons
     return opbytes;
 }
 
-int Disassembler::disassemble_all(std::vector<char> char_vect) const{
+int Disassembler::disassemble_all(std::vector<uint8_t> char_vect) const{
 
-    std::vector<char>::iterator it = char_vect.begin();
+    std::vector<uint8_t>::iterator it = char_vect.begin();
 
     while (it!=char_vect.end()){
         try{

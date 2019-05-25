@@ -4,8 +4,8 @@
 #include <iomanip>
 
 namespace utils{
-	const std::vector<char> file_to_byte_vector(const char* filename);
+	const std::vector<uint8_t> file_to_byte_vector(const char* filename);
 	//*	Convert hexadecimal code into an array of bytes
 	//* 
-	const std::vector<char> string_to_byte_vector(const std::string s);
+	const std::vector<uint8_t> string_to_byte_vector(const std::string s);
 }

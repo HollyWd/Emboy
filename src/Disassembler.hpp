@@ -31,9 +31,9 @@ class Disassembler{
 		 * 
 		 * @return number of opbytes used by the instruction (1 to 3 usually)
 		 */
-		//int disassemble_instruction(const std::vector<char> &memory, int pc);
-		int disassemble_next_op(std::vector<char>::const_iterator it) const;
+		//int disassemble_instruction(const std::vector<uint8_t> &memory, int pc);
+		int disassemble_next_op(std::vector<uint8_t>::const_iterator it) const;
 		int disassemble_instruction(const std::string & instruction) const;
-		int disassemble_all(std::vector<char>) const;
+		int disassemble_all(std::vector<uint8_t>) const;
 		
 };

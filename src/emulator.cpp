@@ -22,11 +22,11 @@ int main(int argc, char* argv[]){
 
 	//Read input file
     std::cout << "Cartridge file is "<< argv[1]<<std::endl;
-    std::vector<char> char_vect = utils::file_to_byte_vector(argv[1]);
-	std::cout << "Cartridge is "<< char_vect.size() <<" bytes long"<<std::endl;
+    std::vector<uint8_t> uint8_vect = utils::file_to_byte_vector(argv[1]);
+	std::cout << "Cartridge is "<< uint8_vect.size() <<" bytes long"<<std::endl;
 
 	//Load cartidge into CPU memory
-	cpu.load_cartridge(char_vect);
+	cpu.load_cartridge(uint8_vect);
 	std::cout << "Cartridge loaded!"<<std::endl<<std::endl;
 
 	cpu.print_cartridge_info();

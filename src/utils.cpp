@@ -3,16 +3,16 @@
 
 //Expects a valid filename
 //store a bynary file in a byte vector
-const std::vector<char> utils::file_to_byte_vector(const char* filename){
+const std::vector<uint8_t> utils::file_to_byte_vector(const char* filename){
 
 	std::ifstream myfilestream(filename, std::ios::binary | std::ios::in);
 	std::istreambuf_iterator<char> file_it_start(myfilestream), file_it_end;
 
-	return std::vector<char>(file_it_start, file_it_end);	
+	return std::vector<uint8_t>(file_it_start, file_it_end);	
 }
 
-const std::vector<char> utils::string_to_byte_vector(const std::string instruction_string){
-	std::vector<char> byte_vect;  
+const std::vector<uint8_t> utils::string_to_byte_vector(const std::string instruction_string){
+	std::vector<uint8_t> byte_vect;  
 	std::string sconvert("0123456789abcdef");
 
 	std::istringstream iss(instruction_string);
